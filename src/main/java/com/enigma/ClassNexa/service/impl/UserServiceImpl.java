@@ -1,8 +1,8 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.classnexa.entity.UserCredential;
-import com.enigma.classnexa.repository.UserCredentialRepository;
-import com.enigma.classnexa.service.UserService;
+import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.repository.UserCredentialRepository;
+import com.enigma.ClassNexa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;

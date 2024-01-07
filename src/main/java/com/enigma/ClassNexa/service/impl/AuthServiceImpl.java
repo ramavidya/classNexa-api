@@ -1,15 +1,15 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.classnexa.constan.ERole;
-import com.enigma.classnexa.entity.Role;
-import com.enigma.classnexa.entity.UserCredential;
-import com.enigma.classnexa.model.request.LoginRequest;
-import com.enigma.classnexa.model.request.RegisterRequest;
-import com.enigma.classnexa.model.request.UserCreateRequest;
-import com.enigma.classnexa.model.response.RegisterResponse;
-import com.enigma.classnexa.repository.UserCredentialRepository;
-import com.enigma.classnexa.security.JwtUtil;
-import com.enigma.classnexa.service.*;
+import com.enigma.ClassNexa.constan.ERole;
+import com.enigma.ClassNexa.entity.Role;
+import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.model.request.LoginRequest;
+import com.enigma.ClassNexa.model.request.RegisterRequest;
+import com.enigma.ClassNexa.model.request.UserCreateRequest;
+import com.enigma.ClassNexa.model.response.RegisterResponse;
+import com.enigma.ClassNexa.repository.UserCredentialRepository;
+import com.enigma.ClassNexa.security.JwtUtil;
+import com.enigma.ClassNexa.service.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

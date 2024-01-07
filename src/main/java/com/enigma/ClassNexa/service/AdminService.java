@@ -1,8 +1,10 @@
 package com.enigma.ClassNexa.service;
 
-import com.enigma.classnexa.model.request.UserCreateRequest;
-import com.enigma.classnexa.model.request.UserUpdateRequest;
-import com.enigma.classnexa.model.response.UserResponse;
+
+
+import com.enigma.ClassNexa.model.request.UserCreateRequest;
+import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.response.UserResponse;
 
 import java.util.List;
 

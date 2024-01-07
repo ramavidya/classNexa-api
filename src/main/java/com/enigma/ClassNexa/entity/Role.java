@@ -1,6 +1,6 @@
 package com.enigma.ClassNexa.entity;
 
-import com.enigma.classnexa.constan.ERole;
+import com.enigma.ClassNexa.constan.ERole;
 import jakarta.persistence.*;
 import lombok.*;
 

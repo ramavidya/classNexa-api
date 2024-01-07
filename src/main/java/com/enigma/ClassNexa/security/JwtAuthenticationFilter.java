@@ -1,7 +1,7 @@
 package com.enigma.ClassNexa.security;
 
-import com.enigma.classnexa.model.JwtClaim;
-import com.enigma.classnexa.service.UserService;
+import com.enigma.ClassNexa.model.JwtClaim;
+import com.enigma.ClassNexa.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

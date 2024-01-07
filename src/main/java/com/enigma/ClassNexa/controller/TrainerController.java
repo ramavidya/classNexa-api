@@ -1,9 +1,9 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.classnexa.model.request.UserUpdateRequest;
-import com.enigma.classnexa.model.response.UserResponse;
-import com.enigma.classnexa.model.response.WebResponse;
-import com.enigma.classnexa.service.TrainerService;
+import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.response.UserResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
+import com.enigma.ClassNexa.service.TrainerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

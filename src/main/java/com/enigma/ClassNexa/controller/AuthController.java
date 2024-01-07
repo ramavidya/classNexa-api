@@ -1,10 +1,11 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.classnexa.model.request.LoginRequest;
-import com.enigma.classnexa.model.request.RegisterRequest;
-import com.enigma.classnexa.model.response.RegisterResponse;
-import com.enigma.classnexa.model.response.WebResponse;
-import com.enigma.classnexa.service.AuthService;
+import com.enigma.ClassNexa.model.request.LoginRequest;
+import com.enigma.ClassNexa.model.request.RegisterRequest;
+import com.enigma.ClassNexa.model.response.RegisterResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
+import com.enigma.ClassNexa.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

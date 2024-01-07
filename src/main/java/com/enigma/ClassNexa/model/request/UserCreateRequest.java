@@ -1,6 +1,6 @@
 package com.enigma.ClassNexa.model.request;
 
-import com.enigma.classnexa.entity.UserCredential;
+import com.enigma.ClassNexa.entity.UserCredential;
 import lombok.*;
 
 @Setter

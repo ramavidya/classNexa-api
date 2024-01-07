@@ -1,9 +1,9 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.classnexa.constan.ERole;
-import com.enigma.classnexa.entity.Role;
-import com.enigma.classnexa.repository.RoleRepository;
-import com.enigma.classnexa.service.RoleService;
+import com.enigma.ClassNexa.constan.ERole;
+import com.enigma.ClassNexa.entity.Role;
+import com.enigma.ClassNexa.repository.RoleRepository;
+import com.enigma.ClassNexa.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

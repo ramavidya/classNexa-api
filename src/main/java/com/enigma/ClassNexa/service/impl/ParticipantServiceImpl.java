@@ -1,14 +1,13 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.classnexa.entity.Admin;
-import com.enigma.classnexa.entity.Participant;
-import com.enigma.classnexa.entity.UserCredential;
-import com.enigma.classnexa.model.request.UserCreateRequest;
-import com.enigma.classnexa.model.request.UserUpdateRequest;
-import com.enigma.classnexa.model.response.UserResponse;
-import com.enigma.classnexa.repository.ParticipantRepository;
-import com.enigma.classnexa.service.ParticipantService;
-import com.enigma.classnexa.service.UserService;
+import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.model.request.UserCreateRequest;
+import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.response.UserResponse;
+import com.enigma.ClassNexa.repository.ParticipantRepository;
+import com.enigma.ClassNexa.service.ParticipantService;
+import com.enigma.ClassNexa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
