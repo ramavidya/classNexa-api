@@ -20,6 +20,14 @@ public class UserServiceImpl implements UserService {
     public UserCredential loadUserById(String userId) {
         return userCredentialRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"unathorized"));
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String delete(UserCredential userCredential) {
+        userCredentialRepository.delete(userCredential);
+        return "OK";
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

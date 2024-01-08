@@ -57,4 +57,16 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<?> delete(@PathVariable String id){
+        String delete = trainerService.delete(id);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("successfuly delete trainer")
+                .data(delete)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }

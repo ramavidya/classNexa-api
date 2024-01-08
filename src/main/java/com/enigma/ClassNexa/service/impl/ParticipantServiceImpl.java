@@ -101,4 +101,14 @@ public class ParticipantServiceImpl implements ParticipantService {
                 .phoneNumber(participant.getPhoneNumber())
                 .build();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String delete(String id) {
+        UserResponse participant = getById(id);
+        UserCredential userCredential =(UserCredential) userService.loadUserByUsername(participant.getEmail());
+        participantRepository.deleteById(participant.getId());
+        String delete = userService.delete(userCredential);
+        return delete;
+    }
 }

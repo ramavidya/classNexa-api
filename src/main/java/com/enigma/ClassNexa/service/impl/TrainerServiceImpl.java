@@ -76,6 +76,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserResponse update(UserUpdateRequest request) {
         UserResponse findId = getById(request.getId());
         UserCredential userCredential =(UserCredential) userService.loadUserByUsername(findId.getEmail());
@@ -99,5 +100,15 @@ public class TrainerServiceImpl implements TrainerService {
                 .email(trainer.getUserCredential().getEmail())
                 .phoneNumber(trainer.getPhoneNumber())
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String delete(String id) {
+        UserResponse trainer = getById(id);
+        UserCredential userCredential =(UserCredential) userService.loadUserByUsername(trainer.getEmail());
+        trainerRepository.deleteById(trainer.getId());
+        String delete = userService.delete(userCredential);
+        return delete;
     }
 }

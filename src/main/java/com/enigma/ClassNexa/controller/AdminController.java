@@ -58,5 +58,16 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<?> delete(@PathVariable String id){
+        String delete = adminService.delete(id);
 
+        WebResponse<String> response = WebResponse.<String>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("successfuly delete admin")
+                .data(delete)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }

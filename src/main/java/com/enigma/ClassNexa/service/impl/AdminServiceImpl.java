@@ -10,6 +10,7 @@ import com.enigma.ClassNexa.service.AdminService;
 import com.enigma.ClassNexa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -103,5 +104,15 @@ public class AdminServiceImpl implements AdminService {
                 .email(admin.getUserCredential().getEmail())
                 .phoneNumber(admin.getPhoneNumber())
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String delete(String id) {
+        UserResponse admin = getById(id);
+        UserCredential userCredential =(UserCredential) userService.loadUserByUsername(admin.getEmail());
+        adminRepository.deleteById(admin.getId());
+        String delete = userService.delete(userCredential);
+        return delete;
     }
 }

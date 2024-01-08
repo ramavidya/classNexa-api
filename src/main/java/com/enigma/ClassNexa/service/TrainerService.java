@@ -10,7 +10,6 @@ public interface TrainerService {
     String create(UserCreateRequest request);
     List<UserResponse> getAll();
     UserResponse getById(String request);
-
     UserResponse update(UserUpdateRequest request);
-
+    String delete(String id);
 }

@@ -14,4 +14,6 @@ public interface AdminService {
     UserResponse getById(String request);
 
     UserResponse update(UserUpdateRequest request);
+
+    String delete(String id);
 }
