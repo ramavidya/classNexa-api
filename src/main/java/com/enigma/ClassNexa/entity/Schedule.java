@@ -20,7 +20,7 @@ public class Schedule {
     private String id;
 
     @Column(name = "meeting_link")
-    private String meeting_link;
+    private String meetingLink;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp start_class;

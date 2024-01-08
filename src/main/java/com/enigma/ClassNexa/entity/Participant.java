@@ -16,16 +16,13 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "address")
     private String address;
 
     @Column(name = "phone_number")
-    private String phone_number;
+    private String phoneNumber;
 
-    @Column(name = "gender")
     private String gender;
 
 

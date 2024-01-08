@@ -2,9 +2,9 @@ package com.enigma.ClassNexa.service;
 
 
 import com.enigma.ClassNexa.entity.Questions;
-import com.enigma.ClassNexa.model.QuestionsRequest;
-import com.enigma.ClassNexa.model.QuestionsResponse;
-import com.enigma.ClassNexa.model.SearchQuestionsRequest;
+import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.response.QuestionsResponse;
+import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import org.springframework.data.domain.Page;
 
 public interface QuestionsService {

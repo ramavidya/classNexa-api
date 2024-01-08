@@ -1,7 +1,11 @@
 package com.enigma.ClassNexa.controller;
 
 
-import com.enigma.ClassNexa.model.*;
+import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
+import com.enigma.ClassNexa.model.response.PagingResponse;
+import com.enigma.ClassNexa.model.response.QuestionsResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

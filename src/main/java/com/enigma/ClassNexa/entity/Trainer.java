@@ -16,16 +16,13 @@ public class Trainer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "address")
     private String address;
 
     @Column(name = "phone_number")
-    private String phone_number;
-
-    @Column(name = "gender")
+    private String phoneNumber;
+    
     private String gender;
 
 

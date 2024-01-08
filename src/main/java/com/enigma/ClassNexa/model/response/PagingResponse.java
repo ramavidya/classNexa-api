@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model;
+package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
 

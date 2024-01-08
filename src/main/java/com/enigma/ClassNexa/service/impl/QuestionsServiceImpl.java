@@ -5,14 +5,14 @@ import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.entity.Questions;
 import com.enigma.ClassNexa.entity.Questions_Status;
 import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.model.QuestionsRequest;
-import com.enigma.ClassNexa.model.QuestionsResponse;
-import com.enigma.ClassNexa.model.SearchQuestionsRequest;
+import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.response.QuestionsResponse;
+import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.repository.QuestionsRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
 import com.enigma.ClassNexa.service.QuestionsService;
-import com.enigma.ClassNexa.service.Questions_Status_Service;
+import com.enigma.ClassNexa.service.QuestionsStatusService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -41,7 +41,7 @@ public class QuestionsServiceImpl implements QuestionsService {
 
         private final ScheduleRepository scheduleRepository;
 
-        private final Questions_Status_Service questions_status_service;
+        private final QuestionsStatusService questions_status_service;
 
         @Override
         @Transactional(readOnly = true)
@@ -71,7 +71,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .question(request.getQuestion())
                         .course(request.getCourse())
                         .chapter(request.getChapter())
-                        .questions_status(questions_status)
+                        .questionsStatus(questions_status)
                         .participant(optionalParticipant.get())
                         .schedule(optionalSchedule.get())
                         .build();
@@ -103,7 +103,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                 Questions_Status questions_status = questions_status_service.getById(request.getStatus().getId());
 
                 Questions updateQuestion = optionalQuestions.get();
-                updateQuestion.setQuestions_status(questions_status);
+                updateQuestion.setQuestionsStatus(questions_status);
 
                 return toQuestionsResponse(questionsRepository.save(updateQuestion));
 
@@ -178,7 +178,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
                 }
 
-                Questions_Status questions_status = questions_status_service.getById(questions.getQuestions_status().getId());
+                Questions_Status questions_status = questions_status_service.getById(questions.getQuestionsStatus().getId());
 
 
 

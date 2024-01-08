@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model;
+package com.enigma.ClassNexa.model.request;
 
 
 import lombok.*;
@@ -14,7 +14,7 @@ public class QuestionsRequest {
     private String question;
     private String course;
     private String chapter;
-    private Question_Status_Request status;
+    private QuestionStatusRequest status;
     private String participantId;
     private String ClassId;
     private String scheduleId;

@@ -16,7 +16,6 @@ public class Classes {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
     private String name;
 
     @ManyToOne

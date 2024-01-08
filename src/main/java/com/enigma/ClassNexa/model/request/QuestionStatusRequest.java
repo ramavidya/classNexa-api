@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model;
+package com.enigma.ClassNexa.model.request;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Question_Status_Request {
+public class QuestionStatusRequest {
     private String id;
     private boolean status;
     private Integer page;

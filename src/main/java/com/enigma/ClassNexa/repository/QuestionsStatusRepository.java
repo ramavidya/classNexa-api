@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface Questions_Status_Repository extends JpaRepository<Questions_Status,String> {
+public interface QuestionsStatusRepository extends JpaRepository<Questions_Status,String> {
 }

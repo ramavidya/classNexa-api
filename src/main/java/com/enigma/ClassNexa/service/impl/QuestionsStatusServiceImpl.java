@@ -2,10 +2,10 @@ package com.enigma.ClassNexa.service.impl;
 
 
 import com.enigma.ClassNexa.entity.Questions_Status;
-import com.enigma.ClassNexa.model.Question_Status_Request;
-import com.enigma.ClassNexa.model.Questions_Status_Response;
-import com.enigma.ClassNexa.repository.Questions_Status_Repository;
-import com.enigma.ClassNexa.service.Questions_Status_Service;
+import com.enigma.ClassNexa.model.request.QuestionStatusRequest;
+import com.enigma.ClassNexa.model.response.Questions_Status_Response;
+import com.enigma.ClassNexa.repository.QuestionsStatusRepository;
+import com.enigma.ClassNexa.service.QuestionsStatusService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -17,9 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
-public class Questions_Status_ServiceImpl implements Questions_Status_Service {
+public class QuestionsStatusServiceImpl implements QuestionsStatusService {
 
-    private final Questions_Status_Repository questionsStatusRepository;
+    private final QuestionsStatusRepository questionsStatusRepository;
 
     @Override
     public Questions_Status getById(String id) {
@@ -28,7 +28,7 @@ public class Questions_Status_ServiceImpl implements Questions_Status_Service {
     }
 
     @Override
-    public Questions_Status_Response create(Question_Status_Request request) {
+    public Questions_Status_Response create(QuestionStatusRequest request) {
 
         Questions_Status status = Questions_Status.builder()
                 .status(request.isStatus())
@@ -47,7 +47,7 @@ public class Questions_Status_ServiceImpl implements Questions_Status_Service {
     }
 
     @Override
-    public Page<Questions_Status_Response> getAll(Question_Status_Request request) {
+    public Page<Questions_Status_Response> getAll(QuestionStatusRequest request) {
         if (request.getPage() <= 0) request.setPage(1);
         Pageable pageable = PageRequest.of(
                 (request.getPage() - 1), request.getSize()

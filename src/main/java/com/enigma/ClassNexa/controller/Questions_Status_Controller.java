@@ -1,11 +1,11 @@
 package com.enigma.ClassNexa.controller;
 
 
-import com.enigma.ClassNexa.model.PagingResponse;
-import com.enigma.ClassNexa.model.Question_Status_Request;
-import com.enigma.ClassNexa.model.Questions_Status_Response;
-import com.enigma.ClassNexa.model.WebResponse;
-import com.enigma.ClassNexa.service.Questions_Status_Service;
+import com.enigma.ClassNexa.model.response.PagingResponse;
+import com.enigma.ClassNexa.model.request.QuestionStatusRequest;
+import com.enigma.ClassNexa.model.response.Questions_Status_Response;
+import com.enigma.ClassNexa.model.response.WebResponse;
+import com.enigma.ClassNexa.service.QuestionsStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,11 +18,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/status")
 public class Questions_Status_Controller {
-    private final Questions_Status_Service questions_status_service;
+    private final QuestionsStatusService questions_status_service;
 
 
     @PostMapping
-    public ResponseEntity<?> createQuestionsStatus(@RequestBody Question_Status_Request request) {
+    public ResponseEntity<?> createQuestionsStatus(@RequestBody QuestionStatusRequest request) {
         Questions_Status_Response questions = questions_status_service.create(request);
         WebResponse<Questions_Status_Response> response = WebResponse.<Questions_Status_Response>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
@@ -40,7 +40,7 @@ public class Questions_Status_Controller {
 
     ) {
 
-        Question_Status_Request request = Question_Status_Request.builder()
+        QuestionStatusRequest request = QuestionStatusRequest.builder()
                 .page(page)
                 .size(size)
                 .build();
