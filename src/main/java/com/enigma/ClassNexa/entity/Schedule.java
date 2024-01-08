@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.List;
+
 
 @Setter
 @Getter
@@ -27,6 +27,6 @@ public class Schedule {
     @Column(name = "end_class")
     private Timestamp endClass;
 
-    @OneToMany
-    private List<java.lang.Class> Class;
+//    @OneToMany
+//    private Classes Class;
 }

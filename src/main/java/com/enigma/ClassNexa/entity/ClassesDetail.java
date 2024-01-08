@@ -9,17 +9,18 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_attend")
+@Table(name = "m_classes_detail")
 @Entity
 @Builder
-public class Attend {
+public class ClassesDetail {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @ManyToOne
-    private Attendance attendance;
+    @OneToMany
+    private List<Participant> participants;
 
     @ManyToOne
-    private Participant participant;
+    private Trainer trainer;
 }

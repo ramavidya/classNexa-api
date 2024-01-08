@@ -1,6 +1,7 @@
 package com.enigma.ClassNexa.repository;
 
-import classnexa.ClassNexa.entity.Attend;
+
+import com.enigma.ClassNexa.entity.Attend;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
