@@ -1,12 +1,17 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.model.request.UserUpdateRequest;
 import com.enigma.ClassNexa.repository.UserCredentialRepository;
 import com.enigma.ClassNexa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserCredentialRepository userCredentialRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserCredential loadUserById(String userId) {
@@ -26,6 +33,27 @@ public class UserServiceImpl implements UserService {
     public String delete(UserCredential userCredential) {
         userCredentialRepository.delete(userCredential);
         return "OK";
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String update(UserUpdateRequest request) {
+        UserCredential loadUserCredential = (UserCredential) loadUserByUsername(request.getEmail());
+
+        boolean matchesPassword = passwordEncoder.matches(request.getPassword(), loadUserCredential.getPassword());
+        if (matchesPassword == false) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"invalid password");
+        }
+
+        userCredentialRepository.save(
+                UserCredential.builder()
+                        .id(loadUserCredential.getId())
+                        .email(loadUserCredential.getEmail())
+                        .password(passwordEncoder.encode(request.getNew_password()))
+                        .roles(loadUserCredential.getRoles())
+                        .build()
+        );
+        return "ok";
     }
 
     @Override

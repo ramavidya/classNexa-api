@@ -1,7 +1,8 @@
 package com.enigma.ClassNexa.controller;
 
 
-import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
+import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.AdminService;
@@ -46,12 +47,24 @@ public class AdminController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody UserUpdateRequest request){
+    public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = adminService.update(request);
 
         WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly update admin")
+                .data(updateResponse)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+    @PutMapping(path = "/change-password")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
+        String updateResponse = adminService.updatePassword(request);
+
+        WebResponse<String> response = WebResponse.<String>builder()
+                .status(HttpStatus.OK.getReasonPhrase())
+                .message("successfuly update password")
                 .data(updateResponse)
                 .build();
 

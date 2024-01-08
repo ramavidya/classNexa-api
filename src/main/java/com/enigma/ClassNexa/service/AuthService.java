@@ -10,4 +10,5 @@ public interface AuthService {
     RegisterResponse registerTrainer(RegisterRequest request);
     RegisterResponse registerParticipant(RegisterRequest request);
     String login(LoginRequest request);
+
 }

@@ -2,7 +2,9 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.request.UserCreateRequest;
+import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.request.UserUpdateRequest;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.TrainerRepository;
@@ -77,7 +79,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserResponse update(UserUpdateRequest request) {
+    public UserResponse update(ProfileUpdateRequest request) {
         UserResponse findId = getById(request.getId());
         UserCredential userCredential =(UserCredential) userService.loadUserByUsername(findId.getEmail());
 
@@ -100,6 +102,22 @@ public class TrainerServiceImpl implements TrainerService {
                 .email(trainer.getUserCredential().getEmail())
                 .phoneNumber(trainer.getPhoneNumber())
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String updatePassword(UpdatePasswordRequest request) {
+        UserResponse trainer = getById(request.getId());
+
+        String updateUsercredential = userService.update(
+                UserUpdateRequest.builder()
+                        .email(trainer.getEmail())
+                        .password(request.getPassword())
+                        .new_password(request.getNew_password())
+                        .build()
+        );
+
+        return updateUsercredential;
     }
 
     @Override
