@@ -1,7 +1,8 @@
 package com.enigma.ClassNexa.controller;
 
-import com.Api.ClassNexa.model.*;
-import com.Api.ClassNexa.service.QuestionsService;
+
+import com.enigma.ClassNexa.model.*;
+import com.enigma.ClassNexa.service.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class QuestionsController {
     public ResponseEntity<?> update(@RequestBody QuestionsRequest request){
         QuestionsResponse update = questionsService.update(request);
 
-        WebResponse<QuestionsResponse> response =WebResponse.<QuestionsResponse>builder()
+        WebResponse<QuestionsResponse> response = WebResponse.<QuestionsResponse>builder()
                 .message("Succesfully update status Questions")
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .data(update)

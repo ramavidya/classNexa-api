@@ -1,6 +1,7 @@
 package com.enigma.ClassNexa.repository;
 
-import com.Api.ClassNexa.entity.Schedule;
+
+import com.enigma.ClassNexa.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

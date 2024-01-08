@@ -1,7 +1,11 @@
 package com.enigma.ClassNexa.controller;
 
-import com.Api.ClassNexa.model.*;
-import com.Api.ClassNexa.service.Questions_Status_Service;
+
+import com.enigma.ClassNexa.model.PagingResponse;
+import com.enigma.ClassNexa.model.Question_Status_Request;
+import com.enigma.ClassNexa.model.Questions_Status_Response;
+import com.enigma.ClassNexa.model.WebResponse;
+import com.enigma.ClassNexa.service.Questions_Status_Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

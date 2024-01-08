@@ -1,12 +1,18 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.Api.ClassNexa.entity.*;
-import com.Api.ClassNexa.model.QuestionsRequest;
-import com.Api.ClassNexa.model.QuestionsResponse;
-import com.Api.ClassNexa.model.SearchQuestionsRequest;
-import com.Api.ClassNexa.repository.*;
-import com.Api.ClassNexa.service.QuestionsService;
-import com.Api.ClassNexa.service.Questions_Status_Service;
+
+import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.entity.Questions;
+import com.enigma.ClassNexa.entity.Questions_Status;
+import com.enigma.ClassNexa.entity.Schedule;
+import com.enigma.ClassNexa.model.QuestionsRequest;
+import com.enigma.ClassNexa.model.QuestionsResponse;
+import com.enigma.ClassNexa.model.SearchQuestionsRequest;
+import com.enigma.ClassNexa.repository.ParticipantRepository;
+import com.enigma.ClassNexa.repository.QuestionsRepository;
+import com.enigma.ClassNexa.repository.ScheduleRepository;
+import com.enigma.ClassNexa.service.QuestionsService;
+import com.enigma.ClassNexa.service.Questions_Status_Service;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -133,19 +139,17 @@ public class QuestionsServiceImpl implements QuestionsService {
                                 predicates.add(trainerNamePredicate);
                         }
 
-                        if (request.getClasseName() != null){
-                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.LEFT);
-                                Predicate trainerNamePredicate = criteriaBuilder.like(
-                                        scheduleJoin.get("name"), "%" + request.getClasseName() + "%"
-                                );
-                                predicates.add(trainerNamePredicate);
-                        }
-
+//                        if (request.getClasseName() != null){
+//                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
+//                                Predicate trainerNamePredicate = criteriaBuilder.like(
+//                                        scheduleJoin.get("name"), "%" + request.getClasseName() + "%"
+//                                );
+//                                predicates.add(trainerNamePredicate);
+//                        }
 
 
 
                         return query.where(predicates.toArray(new Predicate[] {} )).getRestriction();
-
 
                 };
                 return specification;

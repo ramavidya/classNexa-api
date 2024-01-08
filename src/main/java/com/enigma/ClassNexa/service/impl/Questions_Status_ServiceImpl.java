@@ -1,11 +1,13 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.Api.ClassNexa.entity.Questions_Status;
-import com.Api.ClassNexa.model.Question_Status_Request;
-import com.Api.ClassNexa.model.Questions_Status_Response;
-import com.Api.ClassNexa.repository.Questions_Status_Repository;
-import com.Api.ClassNexa.service.Questions_Status_Service;
+
+import com.enigma.ClassNexa.entity.Questions_Status;
+import com.enigma.ClassNexa.model.Question_Status_Request;
+import com.enigma.ClassNexa.model.Questions_Status_Response;
+import com.enigma.ClassNexa.repository.Questions_Status_Repository;
+import com.enigma.ClassNexa.service.Questions_Status_Service;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

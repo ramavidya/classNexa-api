@@ -1,8 +1,9 @@
 package com.enigma.ClassNexa.service;
 
-import com.Api.ClassNexa.entity.Questions_Status;
-import com.Api.ClassNexa.model.Question_Status_Request;
-import com.Api.ClassNexa.model.Questions_Status_Response;
+
+import com.enigma.ClassNexa.entity.Questions_Status;
+import com.enigma.ClassNexa.model.Question_Status_Request;
+import com.enigma.ClassNexa.model.Questions_Status_Response;
 import org.springframework.data.domain.Page;
 
 public interface Questions_Status_Service {
