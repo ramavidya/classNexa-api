@@ -6,9 +6,9 @@ import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.model.ScheduleRequest;
 import com.enigma.ClassNexa.model.ScheduleResponse;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
-import com.enigma.ClassNexa.service.ClassCNService;
+import com.enigma.ClassNexa.service.ClassCNServiceBambang;
 import com.enigma.ClassNexa.service.ScheduleService;
-import com.enigma.ClassNexa.service.TrainerService;
+import com.enigma.ClassNexa.service.TrainerServiceBambang;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ClassCNService classCNService;
-    private final TrainerService trainerService;
+    private final ClassCNServiceBambang classCNService;
+    private final TrainerServiceBambang trainerService;
 
     private ScheduleResponse toScheduleResponse(Schedule schedule){
         Classes byIdClass = classCNService.getById(schedule.getClasses_id().getId());
@@ -115,6 +115,19 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .trainer(byIdTrainer.getName())
                 .build();
         return scheduleResponse;
+    }
+
+    @Override
+    public Schedule getByIdSchedule(String id) {
+        Optional<Schedule> byId = scheduleRepository.findById(id);
+        Schedule schedule = Schedule.builder()
+                .id(byId.get().getId())
+                .meeting_link(byId.get().getMeeting_link())
+                .start_class(byId.get().getStart_class())
+                .end_class(byId.get().getEnd_class())
+                .classes_id(byId.get().getClasses_id())
+                .build();
+        return schedule;
     }
 
 }

@@ -13,7 +13,6 @@ public class Classes {
     @Id
     private String id;
     private String name;
-    private String participant_id;
     @ManyToOne
     private Trainer trainer;
 }

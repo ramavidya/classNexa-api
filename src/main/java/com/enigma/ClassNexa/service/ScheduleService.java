@@ -12,5 +12,5 @@ public interface ScheduleService {
     String delete(String id);
     ScheduleResponse update(ScheduleRequest request);
     ScheduleResponse getById(String id);
-
+    Schedule getByIdSchedule(String id);
 }
