@@ -1,15 +1,13 @@
-package com.enigma.tokopakedi.model;
+package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
-
-import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PagingResponse{
+public class PagingResponse {
     private Integer page;
     private Integer size;
     private Integer totalPages;

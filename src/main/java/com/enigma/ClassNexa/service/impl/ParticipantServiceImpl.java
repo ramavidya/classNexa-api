@@ -1,16 +1,19 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.entity.UserCredential;
-import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
-import com.enigma.ClassNexa.model.request.UserCreateRequest;
-import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
-import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.service.ParticipantService;
 import com.enigma.ClassNexa.service.UserService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,24 +45,13 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<UserResponse> getAll() {
-        List<Participant> findAll = participantRepository.findAll();
-
-        List<UserResponse> userGetResponses = new ArrayList<>();
-        for (Participant participant : findAll) {
-            UserResponse buildResponse = UserResponse.builder()
-                    .id(participant.getId())
-                    .name(participant.getName())
-                    .gender(participant.getGender())
-                    .address(participant.getAddress())
-                    .email(participant.getUserCredential().getEmail())
-                    .phoneNumber(participant.getPhoneNumber())
-                    .build();
-
-            userGetResponses.add(buildResponse);
-        }
-
-        return userGetResponses;
+    public Page<Participant> getAll(SearchUserRequest request) {
+        Specification<Participant> specification = getParticipantSpecification(request);
+        if (request.getPage() <= 0) request.setPage(1);
+        if (request.getSize() <= 0) request.setSize(10);
+        Pageable pageRequest = PageRequest.of(request.getPage()-1, request.getSize());
+        Page<Participant> findAll = participantRepository.findAll(specification,pageRequest);
+        return findAll;
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -134,5 +126,16 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Transactional(rollbackFor = Exception.class)
     public Participant getByParticipantId(String participantId) {
         return participantRepository.findById(participantId).orElse(null);
+    }
+    private static Specification<Participant> getParticipantSpecification(SearchUserRequest request) {
+        Specification<Participant> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (request.getName() != null){
+                Predicate namePredicate = criteriaBuilder.like(root.get("name"), "%" +request.getName() + "%");
+                predicates.add(namePredicate);
+            }
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        };
+        return specification;
     }
 }

@@ -51,19 +51,16 @@ public class AuthServiceImpl implements AuthService {
     public void initSuperAdmin() {
         Optional<UserCredential> optionalUserCredential = userCredentialRepository.findByEmail(email);
         if (optionalUserCredential.isPresent())return;
-
         Role roleSuperAdmin = roleService.getOrSave(ERole.ROLE_SUPER_ADMIN);
         Role roleAdmin = roleService.getOrSave(ERole.ROLE_ADMIN);
         Role roleTrainer = roleService.getOrSave(ERole.ROLE_TRAINER);
         Role roleParticipant = roleService.getOrSave(ERole.ROLE_PARTICIPANT);
         String hashPassword = passwordEncoder.encode(password);
-
         UserCredential userCredential = UserCredential.builder()
                 .email(email)
                 .password(hashPassword)
                 .roles(List.of(roleParticipant,roleTrainer,roleAdmin,roleSuperAdmin))
                 .build();
-
         userCredentialRepository.saveAndFlush(userCredential);
     }
 
@@ -72,22 +69,17 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerAdmin(RegisterRequest request) {
         Optional<UserCredential> optionalUserCredential = userCredentialRepository.findByEmail(request.getEmail());
         if (optionalUserCredential.isPresent())throw new ResponseStatusException(HttpStatus.CONFLICT,"email existed");
-
         Role roleAdmin = roleService.getOrSave(ERole.ROLE_ADMIN);
         Role roleTrainer = roleService.getOrSave(ERole.ROLE_TRAINER);
         Role rolePartisipan = roleService.getOrSave(ERole.ROLE_PARTICIPANT);
-
         String hashPassword = passwordEncoder.encode(request.getPassword());
         UserCredential buildUserCredential = UserCredential.builder()
                 .email(request.getEmail())
                 .password(hashPassword)
                 .roles(List.of(rolePartisipan,roleTrainer,roleAdmin))
                 .build();
-
         UserCredential userCredential = userCredentialRepository.saveAndFlush(buildUserCredential);
         List<String> listRole = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
-
-
         String admin = adminService.create(UserCreateRequest.builder()
                                          .name(request.getName())
                                           .address(request.getAddress())
@@ -95,7 +87,6 @@ public class AuthServiceImpl implements AuthService {
                                               .phoneNumber(request.getPhoneNumber())
                                                 .userCredential(userCredential)
                                                    .build());
-
         return RegisterResponse.builder()
                 .email(userCredential.getEmail())
                 .name(admin)
@@ -108,20 +99,16 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerTrainer(RegisterRequest request) {
         Optional<UserCredential> optionalUserCredential = userCredentialRepository.findByEmail(request.getEmail());
         if (optionalUserCredential.isPresent())throw new ResponseStatusException(HttpStatus.CONFLICT,"email existed");
-
         Role roleTrainer = roleService.getOrSave(ERole.ROLE_TRAINER);
         Role rolePartisipan = roleService.getOrSave(ERole.ROLE_PARTICIPANT);
-
         String hashPassword = passwordEncoder.encode(request.getPassword());
         UserCredential buildUserCredential = UserCredential.builder()
                 .email(request.getEmail())
                 .password(hashPassword)
                 .roles(List.of(rolePartisipan,roleTrainer))
                 .build();
-
         UserCredential userCredential = userCredentialRepository.saveAndFlush(buildUserCredential);
         List<String> listRole = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
-
         String trainer = trainerService.create(UserCreateRequest.builder()
                 .name(request.getName())
                 .address(request.getAddress())
@@ -129,8 +116,6 @@ public class AuthServiceImpl implements AuthService {
                 .phoneNumber(request.getPhoneNumber())
                 .userCredential(userCredential)
                 .build());
-
-
         return RegisterResponse.builder()
                 .email(userCredential.getEmail())
                 .name(trainer)
@@ -143,19 +128,15 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerParticipant(RegisterRequest request) {
         Optional<UserCredential> optionalUserCredential = userCredentialRepository.findByEmail(request.getEmail());
         if (optionalUserCredential.isPresent())throw new ResponseStatusException(HttpStatus.CONFLICT,"email existed");
-
         Role rolePartisipan = roleService.getOrSave(ERole.ROLE_PARTICIPANT);
-
         String hashPassword = passwordEncoder.encode(request.getPassword());
         UserCredential buildUserCredential = UserCredential.builder()
                 .email(request.getEmail())
                 .password(hashPassword)
                 .roles(List.of(rolePartisipan))
                 .build();
-
         UserCredential userCredential = userCredentialRepository.saveAndFlush(buildUserCredential);
         List<String> listRole = userCredential.getRoles().stream().map(role -> role.getRole().name()).toList();
-
         String participan = participantService.create(UserCreateRequest.builder()
                 .name(request.getName())
                 .address(request.getAddress())
@@ -163,8 +144,6 @@ public class AuthServiceImpl implements AuthService {
                 .phoneNumber(request.getPhoneNumber())
                 .userCredential(userCredential)
                 .build());
-
-
         return RegisterResponse.builder()
                 .email(userCredential.getEmail())
                 .name(participan)
@@ -177,11 +156,8 @@ public class AuthServiceImpl implements AuthService {
     public String login(LoginRequest request) {
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         UserCredential userCredential = (UserCredential) authentication.getPrincipal();
-
         return jwtUtil.generateToken(userCredential);
     }
 }
