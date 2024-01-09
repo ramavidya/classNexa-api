@@ -129,4 +129,10 @@ public class ParticipantServiceImpl implements ParticipantService {
         String delete = userService.delete(userCredential);
         return delete;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Participant getByParticipantId(String participantId) {
+        return participantRepository.findById(participantId).orElse(null);
+    }
 }

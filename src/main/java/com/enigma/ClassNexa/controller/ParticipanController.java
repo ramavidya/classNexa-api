@@ -8,6 +8,7 @@ import com.enigma.ClassNexa.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class ParticipanController {
 
     private final ParticipantService participantService;
-
+    @PreAuthorize("hasRole('PARTICIPANT')")
     @GetMapping
     public ResponseEntity<?> getAll(){
         List<UserResponse> getAll = participantService.getAll();
@@ -32,6 +33,7 @@ public class ParticipanController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('PARTICIPANT')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
         UserResponse getById = participantService.getById(id);
@@ -45,6 +47,7 @@ public class ParticipanController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('PARTICIPANT')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = participantService.update(request);
@@ -58,6 +61,7 @@ public class ParticipanController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('PARTICIPANT')")
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
         String updateResponse = participantService.updatePassword(request);
@@ -71,7 +75,7 @@ public class ParticipanController {
         return ResponseEntity.ok(response);
     }
 
-
+    @PreAuthorize("hasRole('PARTICIPANT')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = participantService.delete(id);
