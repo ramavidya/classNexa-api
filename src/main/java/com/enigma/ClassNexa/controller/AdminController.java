@@ -9,6 +9,7 @@ import com.enigma.ClassNexa.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll(){
         List<UserResponse> getAllResponse = adminService.getAll();
@@ -33,6 +35,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
         UserResponse getByIdResponse = adminService.getById(id);
@@ -46,6 +49,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = adminService.update(request);
@@ -58,6 +62,7 @@ public class AdminController {
 
         return ResponseEntity.ok(response);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
         String updateResponse = adminService.updatePassword(request);
@@ -71,6 +76,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = adminService.delete(id);
