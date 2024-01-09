@@ -1,6 +1,7 @@
-package com.enigma.ClassNexa.dto.Request;
+package com.enigma.ClassNexa.model.Request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Builder
@@ -10,10 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 public class SearchDetailClassRequest {
 
-    @NotBlank
+    @NotNull
     private int page;
 
-    @NotBlank
+    @NotNull
     private int size;
 
     @NotBlank

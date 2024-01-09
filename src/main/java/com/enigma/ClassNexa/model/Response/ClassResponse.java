@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.dto.Request;
+package com.enigma.ClassNexa.model.Response;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -10,18 +10,18 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateClassesRequest {
+public class ClassResponse {
 
     @NotBlank
     private String id;
 
     @NotBlank
-    private String name;
+    private String classes;
 
     @NotBlank
-    private String trainerId;
+    private String trainer;
 
     @NotBlank
-    private List<DetailClassParticipantRequest> participants;
+    private List<String> participant;
 
 }

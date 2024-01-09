@@ -1,19 +1,15 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.ClassNexa.dto.Request.ClassesRequest;
-import com.enigma.ClassNexa.dto.Request.DetailClassParticipantRequest;
-import com.enigma.ClassNexa.dto.Request.SearchDetailClassRequest;
-import com.enigma.ClassNexa.dto.Request.UpdateClassesRequest;
-import com.enigma.ClassNexa.dto.Response.ClassResponse;
+import com.enigma.ClassNexa.model.Request.ClassesRequest;
+import com.enigma.ClassNexa.model.Request.DetailClassParticipantRequest;
+import com.enigma.ClassNexa.model.Request.SearchDetailClassRequest;
+import com.enigma.ClassNexa.model.Request.UpdateClassesRequest;
+import com.enigma.ClassNexa.model.Response.ClassResponse;
 import com.enigma.ClassNexa.entity.Classes;
 import com.enigma.ClassNexa.entity.DetailClassParticipant;
-import com.enigma.ClassNexa.entity.Participant;
-import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.repository.ClassesRepository;
 import com.enigma.ClassNexa.service.ClassDetailService;
 import com.enigma.ClassNexa.service.ClassesService;
-import com.enigma.ClassNexa.service.ParticipantService;
-import com.enigma.ClassNexa.service.TrainerService;
 import com.enigma.ClassNexa.util.ValidationUtils;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -54,11 +50,16 @@ public class ClassesServiceImpl implements ClassesService {
         List<DetailClassParticipant> detailClassParticipants = new ArrayList<>();
         for (DetailClassParticipantRequest detailClassParticipantRequest : request.getParticipants()) {
             Participant participant = participantService.getByParticipantId(detailClassParticipantRequest.getId());
-            DetailClassParticipant detailClassParticipant = DetailClassParticipant.builder()
-                    .participant(participant)
-                    .classes(classes)
-                    .build();
-            detailClassParticipants.add(classDetailService.createOrUpdate(detailClassParticipant));
+            DetailClassParticipant byParticipantId =
+                    classDetailService.getByParticipantId(participant);
+            if (byParticipantId == null) {
+                DetailClassParticipant detailClassParticipant = DetailClassParticipant.builder()
+                        .participant(participant)
+                        .classes(classes)
+                        .build();
+                detailClassParticipants.add(classDetailService.createOrUpdate(detailClassParticipant));
+            }
+
         }
 
         List<String> result = detailClassParticipants.stream().map(dcp ->
@@ -157,26 +158,13 @@ public class ClassesServiceImpl implements ClassesService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Page<ClassResponse> getAll(SearchDetailClassRequest request) {
-        validationUtils.validate(request);
         Sort.Direction direction = Sort.Direction.fromString(request.getDirection());
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize(), direction, request.getSortBy());
 
-        Specification<Classes> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (request.getClasses() != null) {
-                predicates.add(criteriaBuilder.like(root.get("name"), "%" + request.getClasses() + "%"));
-            }
-            if (request.getTrainer() != null) {
-                predicates.add(criteriaBuilder.like(root.get("trainer").get("name"), "%" + request.getTrainer() + "%"));
-            }
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-
+        Specification<Classes> spec = getClassesSpecification(request);
         Page<Classes> classesPage = classesRepository.findAll(spec, pageable);
 
         List<ClassResponse> classResponseList = new ArrayList<>();
-
         for (Classes classes : classesPage.getContent()) {
             Trainer trainer = classes.getTrainer();
             List<DetailClassParticipant> detailClassParticipants = classDetailService.getAllDetail();
@@ -199,5 +187,25 @@ public class ClassesServiceImpl implements ClassesService {
 
         return new PageImpl<>(classResponseList, pageable, classesPage.getTotalElements());
     }
+
+    private static Specification<Classes> getClassesSpecification(SearchDetailClassRequest request) {
+        Specification<Classes> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getClasses() != null) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + request.getClasses() + "%"));
+            }
+            if (request.getTrainer() != null) {
+                predicates.add(criteriaBuilder.like(root.get("trainer").get("name"), "%" + request.getTrainer() + "%"));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return spec;
+    }
+
+
+
+
+
 }
 

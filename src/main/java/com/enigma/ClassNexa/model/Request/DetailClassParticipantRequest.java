@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.dto.Request;
+package com.enigma.ClassNexa.model.Request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

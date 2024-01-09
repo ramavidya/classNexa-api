@@ -1,13 +1,12 @@
 package com.enigma.ClassNexa.controller;
 
 
-import com.enigma.ClassNexa.dto.Request.ClassesRequest;
-import com.enigma.ClassNexa.dto.Request.SearchDetailClassRequest;
-import com.enigma.ClassNexa.dto.Request.UpdateClassesRequest;
-import com.enigma.ClassNexa.dto.Response.ClassResponse;
-import com.enigma.ClassNexa.dto.Response.PagingResponse;
-import com.enigma.ClassNexa.dto.Response.WebResponse;
-import com.enigma.ClassNexa.service.ClassDetailService;
+import com.enigma.ClassNexa.model.Request.ClassesRequest;
+import com.enigma.ClassNexa.model.Request.SearchDetailClassRequest;
+import com.enigma.ClassNexa.model.Request.UpdateClassesRequest;
+import com.enigma.ClassNexa.model.Response.ClassResponse;
+import com.enigma.ClassNexa.model.Response.PagingResponse;
+import com.enigma.ClassNexa.model.Response.WebResponse;
 import com.enigma.ClassNexa.service.ClassesService;
 import com.enigma.ClassNexa.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +19,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/classses")
+@RequestMapping(path = "/api/classes")
 public class ClassesController {
 
     private final ClassesService classesService;
-    private  final ClassDetailService classDetailService;
 
     @PostMapping
     public ResponseEntity<?> createNew(@RequestBody ClassesRequest request){
@@ -47,6 +45,7 @@ public class ClassesController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> deleteById(@PathVariable String id){

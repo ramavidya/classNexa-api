@@ -1,6 +1,6 @@
-package com.enigma.ClassNexa.dto.Response;
+package com.enigma.ClassNexa.model.Response;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,16 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PagingResponse {
 
-    @NotBlank
+    @NotNull
     private Long totalElements;
 
-    @NotBlank
+    @NotNull
     private int totalPages;
 
-    @NotBlank
+    @NotNull
     private int page;
 
-    @NotBlank
+    @NotNull
     private int size;
 
 }

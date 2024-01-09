@@ -1,7 +1,6 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.DetailClassParticipant;
-import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.repository.DetailClassParticipantRepository;
 import com.enigma.ClassNexa.service.ClassDetailService;
 import com.enigma.ClassNexa.util.ValidationUtils;
@@ -51,6 +50,4 @@ public class ClassDetailServiceImpl implements ClassDetailService {
     public List<DetailClassParticipant> getAllDetail() {
         return detailClassParticipantRepository.findAll();
     }
-
-
 }

@@ -1,6 +1,7 @@
-package com.enigma.ClassNexa.dto.Response;
+package com.enigma.ClassNexa.model.Response;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -16,7 +17,7 @@ public class WebResponse<T> {
     @NotBlank
     private String message;
 
-    @NotBlank
+    @NotNull
     private PagingResponse pagingResponse;
 
     @NotBlank
