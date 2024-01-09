@@ -129,4 +129,15 @@ public class TrainerServiceImpl implements TrainerService {
         String delete = userService.delete(userCredential);
         return delete;
     }
+
+    @Override
+    public Trainer getTrainerById(String id) {
+        Optional<Trainer> optionalParticipant = trainerRepository.findById(id);
+
+        if (optionalParticipant.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer Not Found");
+
+        Trainer participant = optionalParticipant.get();
+        return participant;
+    }
+
 }

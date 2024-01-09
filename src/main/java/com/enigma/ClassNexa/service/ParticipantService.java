@@ -1,5 +1,6 @@
 package com.enigma.ClassNexa.service;
 
+import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.request.UserCreateRequest;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
@@ -14,4 +15,6 @@ public interface ParticipantService {
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
+    Participant getByParticipantId(String id);
+
 }
