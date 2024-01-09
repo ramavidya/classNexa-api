@@ -3,15 +3,15 @@ package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
 import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
-import com.enigma.ClassNexa.model.response.PagingResponse;
-import com.enigma.ClassNexa.model.response.QuestionsResponse;
-import com.enigma.ClassNexa.model.response.WebResponse;
+import com.enigma.ClassNexa.model.request.UpdateStatusRequest;
+import com.enigma.ClassNexa.model.response.*;
 import com.enigma.ClassNexa.service.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class QuestionsController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody QuestionsRequest request){
+    public ResponseEntity<?> update(@RequestBody UpdateStatusRequest request){
         QuestionsResponse update = questionsService.update(request);
 
         WebResponse<QuestionsResponse> response = WebResponse.<QuestionsResponse>builder()
@@ -62,30 +62,25 @@ public class QuestionsController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String participantName,
-            @RequestParam(required = false) String classeName
+            @RequestParam(required = false) String classesName,
+            @RequestParam(required = false) String trainerName
 
     ) {
 
         SearchQuestionsRequest request = SearchQuestionsRequest.builder()
                 .page(page)
                 .size(size)
+                .classeName(classesName)
+                .trainerName(trainerName)
                 .participantName(participantName)
-                .classeName(classeName)
                 .build();
 
         Page<QuestionsResponse> responses = questionsService.getAll(request);
 
-        PagingResponse pagingResponse = PagingResponse.builder()
-                .page(page)
-                .size(size)
-                .totalPage(responses.getTotalPages())
-                .totalElements(responses.getTotalElements())
-                .build();
 
         WebResponse<List<QuestionsResponse>> response = WebResponse.<List<QuestionsResponse>>builder()
                 .message("successfully get all questions")
                 .status(HttpStatus.OK.getReasonPhrase())
-                .pagging(pagingResponse)
                 .data(responses.getContent())
                 .build();
 

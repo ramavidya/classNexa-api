@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QuestionStatusRequest {
-    private boolean status;
-
+public class SearchStatusRequest {
+    private Integer page;
+    private Integer size;
 }

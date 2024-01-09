@@ -1,9 +1,9 @@
 package com.enigma.ClassNexa.controller;
 
 
-import com.enigma.ClassNexa.model.response.PagingResponse;
 import com.enigma.ClassNexa.model.request.QuestionStatusRequest;
-import com.enigma.ClassNexa.model.response.Questions_Status_Response;
+import com.enigma.ClassNexa.model.request.SearchStatusRequest;
+import com.enigma.ClassNexa.model.response.QuestionsStatusResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.QuestionsStatusService;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +17,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/status")
-public class Questions_Status_Controller {
+public class QuestionsStatusController {
     private final QuestionsStatusService questions_status_service;
 
 
     @PostMapping
     public ResponseEntity<?> createQuestionsStatus(@RequestBody QuestionStatusRequest request) {
-        Questions_Status_Response questions = questions_status_service.create(request);
-        WebResponse<Questions_Status_Response> response = WebResponse.<Questions_Status_Response>builder()
+        QuestionsStatusResponse questions = questions_status_service.create(request);
+        WebResponse<QuestionsStatusResponse> response = WebResponse.<QuestionsStatusResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfully create new Status")
                 .data(questions)
@@ -40,24 +40,17 @@ public class Questions_Status_Controller {
 
     ) {
 
-        QuestionStatusRequest request = QuestionStatusRequest.builder()
+        SearchStatusRequest request = SearchStatusRequest.builder()
                 .page(page)
                 .size(size)
                 .build();
 
-        Page<Questions_Status_Response> responses = questions_status_service.getAll(request);
+        Page<QuestionsStatusResponse> responses = questions_status_service.getAll(request);
 
-        PagingResponse pagingResponse = PagingResponse.builder()
-                .page(page)
-                .size(size)
-                .totalPage(responses.getTotalPages())
-                .totalElements(responses.getTotalElements())
-                .build();
 
-        WebResponse<List<Questions_Status_Response>> response = WebResponse.<List<Questions_Status_Response>>builder()
+        WebResponse<List<QuestionsStatusResponse>> response = WebResponse.<List<QuestionsStatusResponse>>builder()
                 .message("successfully get all Status")
                 .status(HttpStatus.OK.getReasonPhrase())
-                .pagging(pagingResponse)
                 .data(responses.getContent())
                 .build();
 

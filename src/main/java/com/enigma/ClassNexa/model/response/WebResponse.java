@@ -2,15 +2,14 @@ package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
 
-@Builder
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class WebResponse<T> {
-    public String status;
+    private String status;
     private String message;
-    private PagingResponse pagging;
     private T data;
-
 }
+

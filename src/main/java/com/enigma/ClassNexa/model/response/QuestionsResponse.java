@@ -2,7 +2,9 @@ package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,15 +12,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class QuestionsResponse {
-    private String id;
+    private String questionsId;
     private String className;
     private String trainerName;
-    private String participant_name;
-    private String question;
-    private String course;
-    private String chapter;
-    private LocalDateTime start_clases;
-    private LocalDateTime end_classes;
-    private String status;
+    private LocalDateTime startClasses;
+    private LocalDateTime endClasses;
 
+    private List<ParticipantQuestionsResponse> participantQuestions;
 }

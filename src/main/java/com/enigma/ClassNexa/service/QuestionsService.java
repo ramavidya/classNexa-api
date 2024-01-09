@@ -2,9 +2,8 @@ package com.enigma.ClassNexa.service;
 
 
 import com.enigma.ClassNexa.entity.Questions;
-import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.QuestionsResponse;
-import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import org.springframework.data.domain.Page;
 
 public interface QuestionsService {
@@ -15,7 +14,9 @@ public interface QuestionsService {
 
     QuestionsResponse getOne(String id);
 
-    QuestionsResponse update(QuestionsRequest request);
+    QuestionsResponse update(UpdateStatusRequest request);
+
+//    Page<QuestionsResponse> getAll(SearchQuestionsRequest request);
 
     Page<QuestionsResponse> getAll(SearchQuestionsRequest request);
 

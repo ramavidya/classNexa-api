@@ -3,7 +3,8 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Questions_Status;
 import com.enigma.ClassNexa.model.request.QuestionStatusRequest;
-import com.enigma.ClassNexa.model.response.Questions_Status_Response;
+import com.enigma.ClassNexa.model.request.SearchStatusRequest;
+import com.enigma.ClassNexa.model.response.QuestionsStatusResponse;
 import com.enigma.ClassNexa.repository.QuestionsStatusRepository;
 import com.enigma.ClassNexa.service.QuestionsStatusService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class QuestionsStatusServiceImpl implements QuestionsStatusService {
     }
 
     @Override
-    public Questions_Status_Response create(QuestionStatusRequest request) {
+    public QuestionsStatusResponse create(QuestionStatusRequest request) {
 
         Questions_Status status = Questions_Status.builder()
                 .status(request.isStatus())
@@ -38,7 +39,7 @@ public class QuestionsStatusServiceImpl implements QuestionsStatusService {
         Questions_Status savedStatus = questionsStatusRepository.save(status);
 
 
-        Questions_Status_Response questions_status_response = Questions_Status_Response.builder()
+        QuestionsStatusResponse questions_status_response = QuestionsStatusResponse.builder()
                 .id(savedStatus.getId())
                 .status(savedStatus.isStatus())
                 .build();
@@ -47,7 +48,7 @@ public class QuestionsStatusServiceImpl implements QuestionsStatusService {
     }
 
     @Override
-    public Page<Questions_Status_Response> getAll(QuestionStatusRequest request) {
+    public Page<QuestionsStatusResponse> getAll(SearchStatusRequest request) {
         if (request.getPage() <= 0) request.setPage(1);
         Pageable pageable = PageRequest.of(
                 (request.getPage() - 1), request.getSize()
@@ -64,8 +65,8 @@ public class QuestionsStatusServiceImpl implements QuestionsStatusService {
         questionsStatusRepository.delete(questions_status);
     }
 
-    private Questions_Status_Response toResponse(Questions_Status status) {
-        return Questions_Status_Response.builder()
+    private QuestionsStatusResponse toResponse(Questions_Status status) {
+        return QuestionsStatusResponse.builder()
                 .id(status.getId())
                 .status(status.isStatus())
                 .build();

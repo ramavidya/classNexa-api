@@ -1,13 +1,12 @@
 package com.enigma.ClassNexa.service.impl;
 
 
-import com.enigma.ClassNexa.entity.Participant;
-import com.enigma.ClassNexa.entity.Questions;
-import com.enigma.ClassNexa.entity.Questions_Status;
-import com.enigma.ClassNexa.entity.Schedule;
+import com.enigma.ClassNexa.entity.*;
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
-import com.enigma.ClassNexa.model.response.QuestionsResponse;
+import com.enigma.ClassNexa.model.request.UpdateStatusRequest;
+import com.enigma.ClassNexa.model.response.ParticipantQuestionsResponse;
 import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
+import com.enigma.ClassNexa.model.response.QuestionsResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.repository.QuestionsRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
@@ -18,6 +17,7 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -64,7 +65,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
                 }
 
-                Questions_Status questions_status = questions_status_service.getById(request.getStatus().getId());
+                Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
 
                 Questions questions = Questions.builder()
@@ -76,12 +77,10 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .schedule(optionalSchedule.get())
                         .build();
 
-
-
                 questionsRepository.saveAndFlush(questions);
 
 
-                return toQuestionsResponse(questions);
+                return toParticipantQuestionsResponse(questions);
         }
 
         @Override
@@ -90,24 +89,33 @@ public class QuestionsServiceImpl implements QuestionsService {
                 Optional<Questions> optionalQuestions = questionsRepository.findById(id);
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
 
-                return toQuestionsResponse(optionalQuestions.get());
+                return toParticipantQuestionsResponse(optionalQuestions.get());
 
         }
 
         @Override
         @Transactional(rollbackFor = Exception.class)
-        public QuestionsResponse update(QuestionsRequest request) {
-                Optional<Questions> optionalQuestions = questionsRepository.findById(request.getId());
+        public QuestionsResponse update(UpdateStatusRequest request) {
+                Optional<Questions> optionalQuestions = questionsRepository.findById(request.getQuestionsId());
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
 
-                Questions_Status questions_status = questions_status_service.getById(request.getStatus().getId());
+                Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
                 Questions updateQuestion = optionalQuestions.get();
                 updateQuestion.setQuestionsStatus(questions_status);
 
-                return toQuestionsResponse(questionsRepository.save(updateQuestion));
+                return toParticipantQuestionsResponse(questionsRepository.save(updateQuestion));
 
         }
+
+
+        @Override
+        @Transactional(rollbackFor = Exception.class)
+        public void deleteById(String id) {
+                Questions questions = questionsRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Questions not found"));
+                questionsRepository.delete(questions);
+        }
+
 
         @Override
         @Transactional(readOnly = true)
@@ -119,55 +127,17 @@ public class QuestionsServiceImpl implements QuestionsService {
 
                 Specification<Questions> specification = getQuestionsSpesification(request);
 
+
                 Page<Questions> questionsPage = questionsRepository.findAll(specification, pageable);
 
 
 
-                return questionsPage.map(this::toQuestionsResponse);
+                return new PageImpl<>(questionsPage.getContent().stream()
+                        .map(this::toParticipantQuestionsResponse).collect(Collectors.toList()), pageable, questionsPage.getTotalElements());
+
         }
 
-        private Specification<Questions> getQuestionsSpesification(SearchQuestionsRequest request) {
-
-                Specification<Questions> specification = (root, query, criteriaBuilder) -> {
-                        List<Predicate> predicates = new ArrayList<>();
-
-                        if (request.getParticipantName() != null){
-                                Join<Questions, Participant> scheduleJoin = root.join("participant", JoinType.INNER);
-                                Predicate trainerNamePredicate = criteriaBuilder.like(
-                                        scheduleJoin.get("name"), "%" + request.getParticipantName() + "%"
-                                );
-                                predicates.add(trainerNamePredicate);
-                        }
-
-//                        if (request.getClasseName() != null){
-//                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
-//                                Predicate trainerNamePredicate = criteriaBuilder.like(
-//                                        scheduleJoin.get("name"), "%" + request.getClasseName() + "%"
-//                                );
-//                                predicates.add(trainerNamePredicate);
-//                        }
-
-
-
-                        return query.where(predicates.toArray(new Predicate[] {} )).getRestriction();
-
-                };
-                return specification;
-        }
-
-
-
-
-        @Override
-        @Transactional(rollbackFor = Exception.class)
-        public void deleteById(String id) {
-                Questions questions = questionsRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Questions not found"));
-                questionsRepository.delete(questions);
-        }
-
-
-        private QuestionsResponse toQuestionsResponse(Questions questions) {
-
+        private QuestionsResponse toParticipantQuestionsResponse(Questions questions) {
                 Optional<Participant> optionalParticipant = participantRepository.findById(questions.getParticipant().getId());
                 if (optionalParticipant.isEmpty()) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found for the question");
@@ -181,8 +151,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                 Questions_Status questions_status = questions_status_service.getById(questions.getQuestionsStatus().getId());
 
 
-
-
                 String status;
                 if (questions_status.isStatus()){
                         status = "The question has been answered";
@@ -190,20 +158,70 @@ public class QuestionsServiceImpl implements QuestionsService {
                         status = "Unanswered question";
                 }
 
-                QuestionsResponse response = QuestionsResponse.builder()
-                        .id(questions.getId())
+                List<ParticipantQuestionsResponse> questionsResponses = new ArrayList<>();
+                for (Questions questions1 : questions.getParticipant().getQuestions()){
+                        ParticipantQuestionsResponse questionsResponse = ParticipantQuestionsResponse.builder()
+                                .participantName(questions1.getParticipant().getName())
+                                .question(questions1.getQuestion())
+                                .chapter(questions1.getChapter())
+                                .course(questions1.getCourse())
+                                .status(status)
+                                .build();
+                        questionsResponses.add(questionsResponse);
+                }
+
+                QuestionsResponse trainerQuestionsResponse = QuestionsResponse.builder()
+                        .questionsId(questions.getId())
                         .className(optionalSchedule.get().getClasses().getName())
                         .trainerName(optionalSchedule.get().getClasses().getTrainer().getName())
-                        .participant_name(optionalParticipant.get().getName())
-                        .question(questions.getQuestion())
-                        .course(questions.getCourse())
-                        .chapter(questions.getChapter())
-                        .status(status)
-                        .start_clases(optionalSchedule.get().getStart_class().toLocalDateTime())
-                        .end_classes(optionalSchedule.get().getEnd_class().toLocalDateTime())
+                        .startClasses(optionalSchedule.get().getStart_class().toLocalDateTime())
+                        .endClasses(optionalSchedule.get().getEnd_class().toLocalDateTime())
+                        .participantQuestions(questionsResponses)
                         .build();
 
-                return response;
+                return trainerQuestionsResponse;
+        }
+
+        private Specification<Questions> getQuestionsSpesification(SearchQuestionsRequest request) {
+
+                Specification<Questions> specification = (root, query, criteriaBuilder) -> {
+                        List<Predicate> predicates = new ArrayList<>();
+
+                        if (request.getParticipantName() != null){
+                                Join<Questions, Participant> scheduleJoin = root.join("participant", JoinType.INNER);
+                                Predicate participantNamePredicate = criteriaBuilder.like(
+                                        scheduleJoin.get("name"), "%" + request.getParticipantName() + "%"
+                                );
+                                predicates.add(participantNamePredicate);
+                        }
+
+                        if (request.getClasseName() != null) {
+                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
+                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes", JoinType.INNER);
+                                Predicate classNamePredicate = criteriaBuilder.like(
+                                        classesJoin.get("name"), "%" + request.getClasseName() + "%"
+                                );
+                                predicates.add(classNamePredicate);
+                        }
+
+                        if (request.getTrainerName() != null) {
+                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
+                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes", JoinType.INNER);
+                                Join<Classes, Trainer> trainerJoin = classesJoin.join("trainer", JoinType.INNER);
+                                Predicate trainerNamePredicate = criteriaBuilder.like(
+                                        trainerJoin.get("name"), "%" + request.getTrainerName() + "%"
+                                );
+                                predicates.add(trainerNamePredicate);
+                        }
+
+
+
+
+
+                        return query.where(predicates.toArray(new Predicate[] {} )).getRestriction();
+
+                };
+                return specification;
         }
 
 

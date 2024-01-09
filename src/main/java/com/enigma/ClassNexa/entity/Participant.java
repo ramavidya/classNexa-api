@@ -1,7 +1,10 @@
 package com.enigma.ClassNexa.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,7 +28,9 @@ public class Participant {
 
     private String gender;
 
-
+    @OneToMany(mappedBy = "participant", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    private List<Questions> questions;
 
 
 }

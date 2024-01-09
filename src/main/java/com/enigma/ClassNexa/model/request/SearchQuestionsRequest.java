@@ -1,6 +1,10 @@
 package com.enigma.ClassNexa.model.request;
 
+import com.enigma.ClassNexa.entity.Questions_Status;
 import lombok.*;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -12,4 +16,5 @@ public class SearchQuestionsRequest {
     private Integer size;
     private String participantName;
     private String classeName;
+    private String trainerName;
 }
