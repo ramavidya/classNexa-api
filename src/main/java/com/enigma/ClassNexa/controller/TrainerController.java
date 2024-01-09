@@ -8,6 +8,7 @@ import com.enigma.ClassNexa.service.TrainerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class TrainerController {
 
     private final TrainerService trainerService;
 
+    @PreAuthorize("hasRole('TRAINER')")
     @GetMapping
     public ResponseEntity<?> getAll(){
         List<UserResponse> getAll = trainerService.getAll();
@@ -32,6 +34,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('TRAINER')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
         UserResponse getById = trainerService.getById(id);
@@ -45,6 +48,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('TRAINER')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = trainerService.update(request);
@@ -58,6 +62,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('TRAINER')")
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
         String updateResponse = trainerService.updatePassword(request);
@@ -71,7 +76,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
-
+    @PreAuthorize("hasRole('TRAINER')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = trainerService.delete(id);

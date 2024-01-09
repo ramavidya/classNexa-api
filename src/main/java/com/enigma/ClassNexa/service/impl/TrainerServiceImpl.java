@@ -79,6 +79,12 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public Trainer getByTrainerId(String participantId) {
+        return trainerRepository.findById(participantId).orElse(null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserResponse update(ProfileUpdateRequest request) {
         UserResponse findId = getById(request.getId());
         UserCredential userCredential =(UserCredential) userService.loadUserByUsername(findId.getEmail());
