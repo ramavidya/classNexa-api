@@ -1,6 +1,9 @@
 package com.enigma.ClassNexa.model.request;
 
+import com.enigma.ClassNexa.entity.Participant;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -8,5 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class AttendRequest {
-    private String attendanceId;
+    private String scheduleId;
+    private List<AttendDetailRequest> attendDetailRequests;
 }

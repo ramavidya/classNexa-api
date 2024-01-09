@@ -1,11 +1,13 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.model.response.ParticipantNameResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +26,11 @@ public class ParticipantServiceImpl implements ParticipantService {
     public List<Participant> getAllParticipant() {
         return participantRepository.findAll();
     }
+
+    @Override
+    public List<Participant> getParticipantsByNames(List<String> name) {
+        return participantRepository.findByNameIn(name);
+    }
+
+
 }

@@ -8,4 +8,5 @@ public interface ParticipantService {
     Participant getParticipantById (String id);
 
     List<Participant> getAllParticipant ();
+    List<Participant> getParticipantsByNames(List<String> participantNames);
 }

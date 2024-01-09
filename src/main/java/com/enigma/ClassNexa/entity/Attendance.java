@@ -12,7 +12,6 @@ import lombok.*;
 @Builder
 public class Attendance {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String category;

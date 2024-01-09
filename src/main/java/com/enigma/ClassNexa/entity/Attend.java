@@ -18,8 +18,11 @@ public class Attend {
     private String id;
 
     @ManyToOne
+    private Participant participant;
+
+    @ManyToOne
     private Attendance attendance;
 
     @ManyToOne
-    private Participant participant;
+    private Schedule schedule;
 }

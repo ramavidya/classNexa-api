@@ -5,6 +5,7 @@ import com.enigma.ClassNexa.entity.Participant;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -14,8 +15,7 @@ import java.util.List;
 @Builder
 public class AttendResponse {
 
-    private Attendance attendance;
+    private Timestamp classStartedAt;
 
-
-    private List<Participant> participant;
+    private List<AttendDetailResponse> attendDetailResponses;
 }

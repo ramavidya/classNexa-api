@@ -6,6 +6,7 @@ import com.enigma.ClassNexa.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,10 +15,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
     @Override
     public Attendance getAttendanceById(String id) {
-        Optional<Attendance> optionalAttendance = attendanceRepository.findById(id);
-        if (optionalAttendance.isEmpty()) throw new RuntimeException("not found");
-        return optionalAttendance.get();
+         return attendanceRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
+
 
     @Override
     public Attendance create(Attendance request) {
@@ -28,8 +28,26 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public Attendance getAllAttendance() {
-        return null;
+    public List<Attendance> getAllAttendance() {
+        return attendanceRepository.findAll();
+    }
+
+    @Override
+    public void deleteAttendance(String id) {
+        attendanceRepository.deleteById(id);
+    }
+
+    @Override
+    public Attendance getAttendanceByCategory(String categoty) {
+        if (attendanceRepository.findByCategory(categoty) == null) throw new RuntimeException("category not found");
+        Attendance byCategory = attendanceRepository.findByCategory(categoty.toLowerCase());
+        return byCategory;
+    }
+
+    @Override
+    public List<Attendance> getAttendanceByCategory(List<String> category) {
+
+        return attendanceRepository.findByCategoryIn(category);
     }
 
 }

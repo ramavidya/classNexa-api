@@ -27,6 +27,7 @@ public class AttendController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     @PostMapping(path = "/api/attend")
     public ResponseEntity<?> createAttend(@RequestBody AttendRequest request){
         AttendResponse attendResponse = attendService.create(request);
