@@ -43,6 +43,18 @@ public class ParticipantServiceImpl implements ParticipantService {
         Participant participant = participantRepository.saveAndFlush(buildParticipant);
         return participant.getName();
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createList(List<Participant> participants) {
+        participantRepository.saveAll(participants);
+    }
+
+    @Override
+    public List<UserResponse> getAll() {
+        return null;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Page<Participant> getAll(SearchUserRequest request) {

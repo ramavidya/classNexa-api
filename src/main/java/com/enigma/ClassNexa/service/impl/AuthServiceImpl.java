@@ -1,6 +1,7 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.constan.ERole;
+import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.entity.Role;
 import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.*;
@@ -8,6 +9,9 @@ import com.enigma.ClassNexa.model.response.RegisterResponse;
 import com.enigma.ClassNexa.repository.UserCredentialRepository;
 import com.enigma.ClassNexa.security.JwtUtil;
 import com.enigma.ClassNexa.service.*;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +25,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.PasswordAuthentication;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -159,5 +171,60 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserCredential userCredential = (UserCredential) authentication.getPrincipal();
         return jwtUtil.generateToken(userCredential);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer uploadParticipant(MultipartFile file) throws IOException {
+        Set<UploadRequest> uploadRequests = parseCsv(file);
+
+        List<UserCredential> userCredentialList = new ArrayList<>();
+        List<Participant> particpantList = new ArrayList<>();
+
+        for (UploadRequest request : uploadRequests) {
+            UserCredential builUserCredential = UserCredential.builder()
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getEmail()))
+                    .roles(List.of(roleService.getOrSave(ERole.ROLE_PARTICIPANT)))
+                    .build();
+            Participant buildParticipant = Participant.builder()
+                    .name(request.getName())
+                    .gender(request.getGender())
+                    .address(request.getAddress())
+                    .phoneNumber(request.getPhoneNumber())
+                    .userCredential(builUserCredential)
+                    .build();
+            particpantList.add(buildParticipant);
+            userCredentialList.add(builUserCredential);
+
+        }
+        userCredentialRepository.saveAll(userCredentialList);
+        participantService.createList(particpantList);
+
+        return userCredentialList.size();
+    }
+    private Set<UploadRequest> parseCsv(MultipartFile file) throws IOException {
+        try(Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            HeaderColumnNameMappingStrategy<UploadCsvRequest> strategy =
+                    new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(UploadCsvRequest.class);
+            CsvToBean<UploadCsvRequest> csvToBean =
+                    new CsvToBeanBuilder<UploadCsvRequest>(reader)
+                            .withMappingStrategy(strategy)
+                            .withIgnoreEmptyLine(true)
+                            .withIgnoreLeadingWhiteSpace(true)
+                            .build();
+            return csvToBean.parse()
+                    .stream()
+                    .map(csvLine -> UploadRequest.builder()
+                            .email(csvLine.getEmail())
+                            .name(csvLine.getName())
+                            .gender(csvLine.getGender())
+                            .address(csvLine.getAddress())
+                            .phoneNumber(csvLine.getPhoneNumber())
+                            .build()
+                    )
+                    .collect(Collectors.toSet());
+        }
     }
 }
