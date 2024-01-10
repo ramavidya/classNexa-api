@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +55,19 @@ public class AuthController {
         WebResponse<RegisterResponse> response = WebResponse.<RegisterResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfuly create new participant")
+                .data(registerResponse)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(path = "/register/participant/upload",consumes = {"multipart/form-data"})
+    public ResponseEntity<?> registerUploadCsVParticipan(@RequestPart("file") MultipartFile file) throws IOException {
+        Integer registerResponse = authService.uploadParticipant(file);
+        WebResponse<Integer> response = WebResponse.<Integer>builder()
+                .status(HttpStatus.CREATED.getReasonPhrase())
+                .message("successfuly upload participant account")
                 .data(registerResponse)
                 .build();
 
