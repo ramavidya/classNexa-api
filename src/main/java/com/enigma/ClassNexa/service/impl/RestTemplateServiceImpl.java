@@ -12,7 +12,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,7 @@ public class RestTemplateServiceImpl implements RestTemplateService {
         // Form data key-value pair
         String keyTarget = "target";
         String keyMessage = "message";
-        String valueMessage = "added as a participant in java batch 100#, via application class-nexa";
+        String valueMessage = "Hello Trainee Enigma Camp 2.0 \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n  *#Kelompok_2_ngebul*";
 
         for (String targetNumber : request.getNumber()) {
             // URL endpoint
