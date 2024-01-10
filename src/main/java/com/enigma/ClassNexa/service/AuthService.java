@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface AuthService {
     RegisterResponse registerAdmin(RegisterRequest request);
     RegisterResponse registerTrainer(RegisterRequest request);
-    RegisterResponse registerParticipant(RegisterRequest request);
+    RegisterResponse registerParticipant(RegisterRequest request) throws IOException;
     Integer uploadParticipant(MultipartFile file) throws IOException;
     String login(LoginRequest request);
 

@@ -3,6 +3,7 @@ package com.enigma.ClassNexa.model.response;
 import lombok.*;
 
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
