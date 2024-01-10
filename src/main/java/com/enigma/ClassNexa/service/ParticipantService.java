@@ -1,11 +1,9 @@
 package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Participant;
-<<<<<<< HEAD
-=======
+
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 
->>>>>>> dev/putra
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.request.UserCreateRequest;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;

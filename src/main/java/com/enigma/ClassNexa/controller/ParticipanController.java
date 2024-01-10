@@ -45,10 +45,10 @@ public class ParticipanController {
         WebResponse<List<UserResponse>> response = WebResponse.<List<UserResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get participant")
-                .paging(new PagingResponse(pageParticipant.getNumber()+1,
-                        pageParticipant.getSize(),
+                .pagingResponse(new PagingResponse(pageParticipant.getTotalElements(),
                         pageParticipant.getTotalPages(),
-                        pageParticipant.getTotalElements()))
+                        pageParticipant.getNumber()+1,
+                        pageParticipant.getSize()))
                 .data(userGetResponses)
                 .build();
         return ResponseEntity.ok(response);

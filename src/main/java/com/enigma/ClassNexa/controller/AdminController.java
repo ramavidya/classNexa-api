@@ -47,10 +47,10 @@ public class AdminController {
         WebResponse<List<UserResponse>> response = WebResponse.<List<UserResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get admin")
-                .paging(new PagingResponse(pageAdmin.getNumber()+1,
-                        pageAdmin.getSize(),
+                .pagingResponse(new PagingResponse(pageAdmin.getTotalElements(),
                         pageAdmin.getTotalPages(),
-                        pageAdmin.getTotalElements()))
+                        pageAdmin.getNumber()+1,
+                        pageAdmin.getSize()))
                 .data(userGetResponses).build();
         return ResponseEntity.ok(response);
     }
