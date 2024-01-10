@@ -68,8 +68,11 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Trainer getByTrainerId(String participantId) {
-        return trainerRepository.findById(participantId).orElse(null);
+    public Trainer getByTrainerId(String id) {
+        Optional<Trainer> optionalParticipant = trainerRepository.findById(id);
+        if (optionalParticipant.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer Not Found");
+        Trainer Trainer = optionalParticipant.get();
+        return Trainer;
     }
 
     @Override

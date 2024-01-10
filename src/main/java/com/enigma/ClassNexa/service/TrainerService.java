@@ -17,5 +17,5 @@ public interface TrainerService {
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
-    Trainer getByTrainerId(String participantId);
+    Trainer getByTrainerId(String id);
 }
