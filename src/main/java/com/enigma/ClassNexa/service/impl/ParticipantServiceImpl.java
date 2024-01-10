@@ -1,12 +1,12 @@
 package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Participant;
-import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.service.ParticipantService;
+import com.enigma.ClassNexa.service.RestTemplateService;
 import com.enigma.ClassNexa.service.UserService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +29,10 @@ import java.util.Optional;
 public class ParticipantServiceImpl implements ParticipantService {
     private final ParticipantRepository participantRepository;
     private final UserService userService;
+    private final RestTemplateService restTemplateService;
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String create(UserCreateRequest request) {
+    public String create(UserCreateRequest request) throws IOException {
 
         Participant buildParticipant = Participant.builder()
                 .name(request.getName())
@@ -41,6 +43,13 @@ public class ParticipantServiceImpl implements ParticipantService {
                 .build();
 
         Participant participant = participantRepository.saveAndFlush(buildParticipant);
+
+        if (request.getPhoneNumber() != null) {
+            TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
+                    .number(List.of(participant.getPhoneNumber()))
+                    .build();
+            restTemplateService.sendMessageRegisterParticipant(buildTargetNumber);
+        }
         return participant.getName();
     }
 
@@ -115,7 +124,6 @@ public class ParticipantServiceImpl implements ParticipantService {
                         .new_password(request.getNew_password())
                         .build()
         );
-
         return updateUsercredential;
     }
 

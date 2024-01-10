@@ -31,7 +31,6 @@ public class AuthController {
                 .message("successfuly create new admin")
                 .data(registerResponse)
                 .build();
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -50,7 +49,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(path = "/register/participant")
-    public ResponseEntity<?> registerParticipan(@RequestBody RegisterRequest request){
+    public ResponseEntity<?> registerParticipan(@RequestBody RegisterRequest request) throws IOException {
         RegisterResponse registerResponse = authService.registerParticipant(request);
         WebResponse<RegisterResponse> response = WebResponse.<RegisterResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
@@ -77,13 +76,11 @@ public class AuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
         String login = authService.login(request);
-
         WebResponse<String> response = WebResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly login")
                 .data(login)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 }
