@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model.request;
+package com.enigma.ClassNexa.dto.request;
 
 import lombok.*;
 
@@ -7,9 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateAttendRequest {
-    private String id;
+public class AttendDetailRequest {
     private String participantId;
     private String categoryId;
-    private String scheduleId;
 }

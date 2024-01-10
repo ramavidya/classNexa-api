@@ -4,20 +4,18 @@ import com.enigma.ClassNexa.entity.Attend;
 import com.enigma.ClassNexa.entity.Attendance;
 import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.model.request.AttendDetailRequest;
-import com.enigma.ClassNexa.model.request.AttendRequest;
-import com.enigma.ClassNexa.model.request.SearchAttendRequest;
-import com.enigma.ClassNexa.model.request.UpdateAttendRequest;
-import com.enigma.ClassNexa.model.response.AttendDetailResponse;
-import com.enigma.ClassNexa.model.response.AttendResponse;
-import com.enigma.ClassNexa.model.response.SingleAttendResponse;
+import com.enigma.ClassNexa.dto.request.AttendDetailRequest;
+import com.enigma.ClassNexa.dto.request.AttendRequest;
+import com.enigma.ClassNexa.dto.request.SearchAttendRequest;
+import com.enigma.ClassNexa.dto.request.UpdateAttendRequest;
+import com.enigma.ClassNexa.dto.response.AttendDetailResponse;
+import com.enigma.ClassNexa.dto.response.AttendResponse;
+import com.enigma.ClassNexa.dto.response.SingleAttendResponse;
 import com.enigma.ClassNexa.repository.AttendRepository;
-import com.enigma.ClassNexa.repository.ScheduleRepository;
 import com.enigma.ClassNexa.service.AttendService;
 import com.enigma.ClassNexa.service.AttendanceService;
 import com.enigma.ClassNexa.service.ParticipantService;
 import com.enigma.ClassNexa.service.ScheduleService;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,6 @@ public class AttendServiceImpl implements AttendService {
     private final AttendRepository attendRepository;
     private final AttendanceService attendanceService;
     private final ParticipantService participantService;
-    private final ScheduleRepository scheduleRepository;
     private final ScheduleService scheduleService;
 
     @Override
@@ -50,8 +47,9 @@ public class AttendServiceImpl implements AttendService {
                 .participantName(optionalAttend.get().getParticipant().getName())
                 .info(optionalAttend.get().getAttendance().getCategory())
                 .build();
-        SingleAttendResponse attendResponse = SingleAttendResponse.builder()
+         SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .id(optionalAttend.get().getId())
+                .scheduleId(optionalAttend.get().getSchedule().getId())
                 .classStartedAt(optionalAttend.get().getSchedule().getStartClass())
                 .attendDetailResponse(attendDetailResponse)
                 .build();
@@ -62,7 +60,7 @@ public class AttendServiceImpl implements AttendService {
     public AttendResponse create(AttendRequest request) {
         List<Attend> attends = new ArrayList<>();
         List<AttendDetailResponse> attendDetailResponses = new ArrayList<>();
-        Optional<Schedule> byId = scheduleRepository.findById(request.getScheduleId());
+        Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
         for (AttendDetailRequest attendDetailRequest : request.getAttendDetailRequests()) {
             Participant participant = participantService.getParticipantById(attendDetailRequest.getParticipantId());
             Attendance attendance = attendanceService.getAttendanceById(attendDetailRequest.getCategoryId());
@@ -74,7 +72,7 @@ public class AttendServiceImpl implements AttendService {
             Attend attend = Attend.builder()
                     .participant(participant)
                     .attendance(attendance)
-                    .schedule(byId.get())
+                    .schedule(schedule)
                     .build();
 
             attendDetailResponses.add(attendDetailResponse);
@@ -82,88 +80,40 @@ public class AttendServiceImpl implements AttendService {
             attendRepository.save(attend);
         }
         AttendResponse attendResponse = AttendResponse.builder()
-                .classStartedAt(byId.get().getStartClass())
+                .scheduleId(schedule.getId())
+                .classStartedAt(schedule.getStartClass())
                 .attendDetailResponses(attendDetailResponses)
                 .build();
         return attendResponse;
     }
 
     @Override
-    public List<SingleAttendResponse> getAllWithoutFilter(SearchAttendRequest request) {
+    public List<SingleAttendResponse> getAll(SearchAttendRequest request) {
         if (request.getPage() <= 0) request.setPage(1);
-        log.info(request.getParticipantName());
+        log.info(request.getParticipantId());
         Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
-        //Specification<Attend> specification = getAttendSpesification(request);
-        List<Attend> all = attendRepository.findAll();
-        List<AttendDetailResponse> attendDetailResponses = new ArrayList<>();
+        Specification<Attend> specification = getProductSpecification(request);
+        Page<Attend> all = attendRepository.findAll(specification, pageable);
         List<SingleAttendResponse> attendResponses = new ArrayList<>();
-        for (int i = 0; i < all.size(); i++){
-            Participant participant = participantService.getParticipantById(all.get(i).getParticipant().getId());
-            Attendance attendance = attendanceService.getAttendanceById(all.get(i).getAttendance().getId());
-            Schedule schedule = scheduleService.getByIdSchedule(all.get(i).getSchedule().getId());
-
+        for (int i = 0; i < all.getContent().size(); i++){
+            Participant participant = participantService.getParticipantById(all.getContent().get(i).getParticipant().getId());
+            Attendance attendance = attendanceService.getAttendanceById(all.getContent().get(i).getAttendance().getId());
+            Schedule schedule = scheduleService.getByIdSchedule(all.getContent().get(i).getSchedule().getId());
             AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
                     .ParticipantId(participant.getId())
                     .participantName(participant.getName())
                     .info(attendance.getCategory())
                     .build();
-            attendDetailResponses.add(attendDetailResponse);
-            SingleAttendResponse singleAttendResponse = SingleAttendResponse.builder()
-                    .id(all.get(i).getId())
+            SingleAttendResponse attendResponse = SingleAttendResponse.builder()
+                    .id(all.getContent().get(i).getId())
+                    .scheduleId(schedule.getId())
                     .classStartedAt(schedule.getStartClass())
                     .attendDetailResponse(attendDetailResponse)
-                    .build();
-
-            attendResponses.add(singleAttendResponse);
-        }
-        return attendResponses;
-    }
-//    private Specification<Attend> getAttendSpesification(SearchAttendRequest request) {
-//        return (root, query, criteriaBuilder) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            if (request.getParticipantName() != null) {
-//
-//                Predicate name = criteriaBuilder.like(
-//                        criteriaBuilder.lower(root.get("t_attend").get("participant_id").get("name")),
-//                        "%" + request.getParticipantName().toLowerCase() + "%"
-//                );
-//                predicates.add(name);
-//            }
-//            if (request.getClassStartedAt() != null) {
-//                Predicate startClass = criteriaBuilder.equal(root.get("schedule_id").get("start_class"), request.getClassStartedAt());
-//                predicates.add(startClass);
-//            }
-//            return query
-//                    .where(predicates.toArray(new Predicate[]{}))
-//                    .getRestriction();
-//        };
-//    }
-
-    @Override
-    public List<AttendResponse> getAll() {
-        List<Attend> all = attendRepository.findAll();List<AttendDetailResponse> attendDetailResponses = new ArrayList<>();
-        List<AttendResponse> attendResponses = new ArrayList<>();
-        for (int i = 0; i < all.size(); i++){
-            Participant participant = participantService.getParticipantById(all.get(i).getParticipant().getId());
-            Attendance attendance = attendanceService.getAttendanceById(all.get(i).getAttendance().getId());
-            Optional<Schedule> optionalSchedule = scheduleRepository.findById(all.get(i).getSchedule().getId());
-            AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
-                    .ParticipantId(participant.getId())
-                    .participantName(participant.getName())
-                    .info(attendance.getCategory())
-                    .build();
-            attendDetailResponses.add(attendDetailResponse);
-            AttendResponse attendResponse = AttendResponse.builder()
-                    .id(all.get(i).getId())
-                    .classStartedAt(optionalSchedule.get().getStartClass())
-                    .attendDetailResponses(attendDetailResponses)
                     .build();
             attendResponses.add(attendResponse);
         }
         return attendResponses;
     }
-
     @Override
     public void deleteById(String id) {
         attendRepository.deleteById(id);
@@ -173,7 +123,7 @@ public class AttendServiceImpl implements AttendService {
     public SingleAttendResponse Update(UpdateAttendRequest request) {
         Optional<Attend> optionalAttend = attendRepository.findById(request.getId());
         if (optionalAttend.isEmpty()) throw new RuntimeException("not found");
-        Optional<Schedule> byId = scheduleRepository.findById(request.getScheduleId());
+        Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
         Participant participantById = participantService.getParticipantById(request.getParticipantId());
         Attendance attendance = attendanceService.getAttendanceById(request.getCategoryId());
         Attend attend = optionalAttend.get();
@@ -184,22 +134,32 @@ public class AttendServiceImpl implements AttendService {
                 .build();
         SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .id(optionalAttend.get().getId())
-                .classStartedAt(byId.get().getStartClass())
+                .scheduleId(schedule.getId())
+                .classStartedAt(schedule.getStartClass())
                 .attendDetailResponse(attendDetailResponse)
                 .build();
         attend = Attend.builder()
                 .id(request.getId())
-                .schedule(byId.get())
+                .schedule(schedule)
                 .participant(participantById)
                 .attendance(attendance)
                 .build();
          attendRepository.save(attend);
          return attendResponse;
     }
-
-    @Override
-    public List<SingleAttendResponse> getAllWithFilter(String scheduleId) {
-        scheduleService.getByIdSchedule(scheduleId);
-        return null;
+    private Specification<Attend> getProductSpecification(SearchAttendRequest request) {
+        Specification<Attend> specification = ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (request.getParticipantId() != null){
+                Predicate namePredicate = criteriaBuilder.like(root.get("participant").get("id"), "%" + request.getParticipantId() + "%");
+                predicates.add(namePredicate);
+            }
+            if (request.getScheduleId() != null){
+                Predicate minPricePredicate = criteriaBuilder.equal(root.get("schedule").get("id"), request.getScheduleId());
+                predicates.add(minPricePredicate);
+            }
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        });
+        return specification;
     }
 }

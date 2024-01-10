@@ -1,8 +1,6 @@
-package com.enigma.ClassNexa.model.request;
+package com.enigma.ClassNexa.dto.request;
 
 import lombok.*;
-
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -12,6 +10,6 @@ import java.sql.Timestamp;
 public class SearchAttendRequest {
     private Integer page;
     private Integer size;
-    private Timestamp classStartedAt;
-    private String participantName;
+    private String scheduleId;
+    private String participantId;
 }

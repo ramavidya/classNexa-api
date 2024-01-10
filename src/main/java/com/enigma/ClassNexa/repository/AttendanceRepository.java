@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, String> {
-    List<Attendance> findByCategoryIn(List<String> category);
-    Attendance findByCategory(String category);
+
 }

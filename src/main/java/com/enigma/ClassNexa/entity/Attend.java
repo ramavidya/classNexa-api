@@ -18,11 +18,14 @@ public class Attend {
     private String id;
 
     @ManyToOne
+    @JoinColumn(name = "participant_id")
     private Participant participant;
 
     @ManyToOne
+    @JoinColumn(name = "attendance_id")
     private Attendance attendance;
 
     @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 }

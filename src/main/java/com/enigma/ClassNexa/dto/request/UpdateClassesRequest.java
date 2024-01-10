@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model.request;
+package com.enigma.ClassNexa.dto.request;
 
 import com.enigma.ClassNexa.entity.Participant;
 import lombok.*;

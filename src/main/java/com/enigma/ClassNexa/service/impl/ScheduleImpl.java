@@ -20,7 +20,7 @@ public class ScheduleImpl implements ScheduleService {
                 .meetingLink(byId.get().getMeetingLink())
                 .startClass(byId.get().getStartClass())
                 .endClass(byId.get().getEndClass())
-                .Class(byId.get().getClass())
+                .Classes(byId.get().getClasses())
                 .build();
         return schedule;
 

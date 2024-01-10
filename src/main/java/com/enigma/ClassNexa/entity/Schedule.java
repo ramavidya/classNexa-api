@@ -27,7 +27,7 @@ public class Schedule {
     @Column(name = "end_class")
     private Timestamp endClass;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "classes_id", referencedColumnName = "id")
-    private Classes Class;
+    private Classes Classes;
 }

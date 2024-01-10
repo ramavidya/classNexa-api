@@ -12,7 +12,4 @@ public interface AttendanceService {
     List<Attendance> getAllAttendance();
 
     void deleteAttendance(String id);
-
-    Attendance getAttendanceByCategory(String categoty);
-    List<Attendance> getAttendanceByCategory(List<String> category);
 }

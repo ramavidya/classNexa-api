@@ -1,8 +1,5 @@
-package com.enigma.ClassNexa.model.response;
+package com.enigma.ClassNexa.dto.response;
 
-import com.enigma.ClassNexa.entity.Attendance;
-import com.enigma.ClassNexa.entity.Participant;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -16,6 +13,7 @@ import java.util.List;
 public class AttendResponse {
     private String id;
 
+    private String scheduleId;
     private Timestamp classStartedAt;
 
     private List<AttendDetailResponse> attendDetailResponses;

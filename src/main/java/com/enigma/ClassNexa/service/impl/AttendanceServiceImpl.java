@@ -17,8 +17,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Attendance getAttendanceById(String id) {
          return attendanceRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
-
-
     @Override
     public Attendance create(Attendance request) {
         Attendance attendance = Attendance.builder()
@@ -35,19 +33,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public void deleteAttendance(String id) {
         attendanceRepository.deleteById(id);
-    }
-
-    @Override
-    public Attendance getAttendanceByCategory(String categoty) {
-        if (attendanceRepository.findByCategory(categoty) == null) throw new RuntimeException("category not found");
-        Attendance byCategory = attendanceRepository.findByCategory(categoty.toLowerCase());
-        return byCategory;
-    }
-
-    @Override
-    public List<Attendance> getAttendanceByCategory(List<String> category) {
-
-        return attendanceRepository.findByCategoryIn(category);
     }
 
 }
