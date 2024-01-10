@@ -16,8 +16,6 @@ public interface QuestionsService {
 
     QuestionsResponse update(UpdateStatusRequest request);
 
-//    Page<QuestionsResponse> getAll(SearchQuestionsRequest request);
-
     Page<QuestionsResponse> getAll(SearchQuestionsRequest request);
 
     void deleteById(String id);

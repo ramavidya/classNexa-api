@@ -3,8 +3,10 @@ package com.enigma.ClassNexa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Date;
 import java.sql.Timestamp;
-
+import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -31,4 +33,5 @@ public class Schedule {
     @ManyToOne
     @JoinColumn(name = "classes_id")
     private Classes classes;
+
 }

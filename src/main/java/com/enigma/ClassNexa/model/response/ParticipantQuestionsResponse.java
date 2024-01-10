@@ -2,7 +2,6 @@ package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,4 +14,5 @@ public class ParticipantQuestionsResponse {
     private String course;
     private String chapter;
     private String status;
+
 }

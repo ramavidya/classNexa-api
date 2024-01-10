@@ -1,10 +1,11 @@
 package com.enigma.ClassNexa.model.request;
 
-import com.enigma.ClassNexa.entity.Questions_Status;
+
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -12,9 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class SearchQuestionsRequest {
+    private String participantId;
+    private String statusId;
+    private String questionsId;
     private Integer page;
     private Integer size;
     private String participantName;
     private String classeName;
     private String trainerName;
+    private LocalDateTime start_class;
+    private boolean status;
 }

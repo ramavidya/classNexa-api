@@ -8,11 +8,14 @@ import com.enigma.ClassNexa.model.response.*;
 import com.enigma.ClassNexa.service.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -63,9 +66,11 @@ public class QuestionsController {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String participantName,
             @RequestParam(required = false) String classesName,
-            @RequestParam(required = false) String trainerName
-
+            @RequestParam(required = false) String trainerName,
+            @RequestParam(required = false) LocalDateTime start_classes,
+            @RequestParam(required = false) boolean status
     ) {
+
 
         SearchQuestionsRequest request = SearchQuestionsRequest.builder()
                 .page(page)
@@ -73,6 +78,8 @@ public class QuestionsController {
                 .classeName(classesName)
                 .trainerName(trainerName)
                 .participantName(participantName)
+                .start_class(start_classes)
+                .status(status)
                 .build();
 
         Page<QuestionsResponse> responses = questionsService.getAll(request);

@@ -29,7 +29,6 @@ public class Participant {
     private String gender;
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.PERSIST)
-    @JsonManagedReference
     private List<Questions> questions;
 
 

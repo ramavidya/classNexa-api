@@ -16,6 +16,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuestionsServiceImpl implements QuestionsService {
 
         private final QuestionsRepository questionsRepository;
@@ -77,6 +79,8 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .schedule(optionalSchedule.get())
                         .build();
 
+
+
                 questionsRepository.saveAndFlush(questions);
 
 
@@ -98,6 +102,11 @@ public class QuestionsServiceImpl implements QuestionsService {
         public QuestionsResponse update(UpdateStatusRequest request) {
                 Optional<Questions> optionalQuestions = questionsRepository.findById(request.getQuestionsId());
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
+
+                Optional<Schedule> optionalSchedule = scheduleRepository.findById(request.getScheduleId());
+                if (optionalSchedule.isEmpty()) {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
+                }
 
                 Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
@@ -125,15 +134,16 @@ public class QuestionsServiceImpl implements QuestionsService {
                         (request.getPage() - 1), request.getSize()
                 );
 
+
                 Specification<Questions> specification = getQuestionsSpesification(request);
 
 
                 Page<Questions> questionsPage = questionsRepository.findAll(specification, pageable);
 
 
-
                 return new PageImpl<>(questionsPage.getContent().stream()
-                        .map(this::toParticipantQuestionsResponse).collect(Collectors.toList()), pageable, questionsPage.getTotalElements());
+                        .map(this::toParticipantQuestionsResponse).collect(Collectors.toList()),
+                        pageable, questionsPage.getTotalElements());
 
         }
 
@@ -148,36 +158,41 @@ public class QuestionsServiceImpl implements QuestionsService {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
                 }
 
-                Questions_Status questions_status = questions_status_service.getById(questions.getQuestionsStatus().getId());
-
-
-                String status;
-                if (questions_status.isStatus()){
-                        status = "The question has been answered";
-                }else {
-                        status = "Unanswered question";
-                }
 
                 List<ParticipantQuestionsResponse> questionsResponses = new ArrayList<>();
-                for (Questions questions1 : questions.getParticipant().getQuestions()){
+
+
+                for (Questions questionsParticipant : optionalParticipant.get().getQuestions()){
+
+                        String status;
+                        if (questionsParticipant.getQuestionsStatus().isStatus() == true){
+                                status = "The question has been answered";
+                        }else {
+                                status = "Unanswered question";
+                        }
+
                         ParticipantQuestionsResponse questionsResponse = ParticipantQuestionsResponse.builder()
-                                .participantName(questions1.getParticipant().getName())
-                                .question(questions1.getQuestion())
-                                .chapter(questions1.getChapter())
-                                .course(questions1.getCourse())
+                                .participantName(questionsParticipant.getParticipant().getName())
+                                .question(questionsParticipant.getQuestion())
+                                .chapter(questionsParticipant.getChapter())
+                                .course(questionsParticipant.getCourse())
                                 .status(status)
                                 .build();
                         questionsResponses.add(questionsResponse);
                 }
 
+
+
                 QuestionsResponse trainerQuestionsResponse = QuestionsResponse.builder()
                         .questionsId(questions.getId())
                         .className(optionalSchedule.get().getClasses().getName())
                         .trainerName(optionalSchedule.get().getClasses().getTrainer().getName())
+                        .participantQuestions(questionsResponses)
                         .startClasses(optionalSchedule.get().getStart_class().toLocalDateTime())
                         .endClasses(optionalSchedule.get().getEnd_class().toLocalDateTime())
-                        .participantQuestions(questionsResponses)
                         .build();
+
+
 
                 return trainerQuestionsResponse;
         }
@@ -214,6 +229,20 @@ public class QuestionsServiceImpl implements QuestionsService {
                                 predicates.add(trainerNamePredicate);
                         }
 
+                        if (request.getStart_class() != null) {
+                                Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
+                                Predicate start_class = criteriaBuilder.equal(
+                                        scheduleJoin.get("start_class"), request.getStart_class()
+                                );
+                                predicates.add(start_class);
+
+                        }
+
+                        Join<Questions, Questions_Status> statusJoin = root.join("questionsStatus", JoinType.INNER);
+                        if (request.isStatus()) {
+                                Predicate statusPredicate = criteriaBuilder.isTrue(statusJoin.get("status"));
+                                predicates.add(statusPredicate);
+                        }
 
 
 

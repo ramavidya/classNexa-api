@@ -9,5 +9,6 @@ import lombok.*;
 @Builder
 public class UpdateStatusRequest {
     private String questionsId;
+    private String scheduleId;
     private String statusId;
 }
