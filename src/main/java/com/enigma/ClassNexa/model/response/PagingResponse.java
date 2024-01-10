@@ -1,5 +1,6 @@
 package com.enigma.ClassNexa.model.response;
 
+<<<<<<< HEAD
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,4 +25,18 @@ public class PagingResponse {
     @NotNull
     private int size;
 
+=======
+import lombok.*;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class PagingResponse {
+    private Integer page;
+    private Integer size;
+    private Integer totalPages;
+    private Long totalElements;
+>>>>>>> dev/putra
 }

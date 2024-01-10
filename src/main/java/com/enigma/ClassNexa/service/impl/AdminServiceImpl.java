@@ -2,15 +2,17 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Admin;
 import com.enigma.ClassNexa.entity.UserCredential;
-import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
-import com.enigma.ClassNexa.model.request.UserCreateRequest;
-import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
-import com.enigma.ClassNexa.model.request.UserUpdateRequest;
+import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.AdminRepository;
 import com.enigma.ClassNexa.service.AdminService;
 import com.enigma.ClassNexa.service.UserService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String create(UserCreateRequest request) {
-
         Admin buildAdmin = Admin.builder()
                 .name(request.getName())
                 .gender(request.getGender())
@@ -38,30 +39,19 @@ public class AdminServiceImpl implements AdminService {
                 .phoneNumber(request.getPhoneNumber())
                 .userCredential(request.getUserCredential())
                 .build();
-
         Admin admin = adminRepository.saveAndFlush(buildAdmin);
         return admin.getName();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<UserResponse> getAll() {
-        List<Admin> findAll = adminRepository.findAll();
-
-        List<UserResponse> userGetResponses = new ArrayList<>();
-        for (Admin admin : findAll) {
-            UserResponse buildResponse = UserResponse.builder()
-                    .id(admin.getId())
-                    .name(admin.getName())
-                    .gender(admin.getGender())
-                    .address(admin.getAddress())
-                    .email(admin.getUserCredential().getEmail())
-                    .phoneNumber(admin.getPhoneNumber())
-                    .build();
-
-            userGetResponses.add(buildResponse);
-        }
-        return userGetResponses;
+    public Page<Admin> getAll(SearchUserRequest request) {
+        Specification<Admin> specification = getAdminSpecification(request);
+        if (request.getPage() <= 0) request.setPage(1);
+        if (request.getSize() <= 0) request.setSize(10);
+        Pageable pageRequest = PageRequest.of(request.getPage()-1, request.getSize());
+        Page<Admin> getAllAdmin = adminRepository.findAll(specification, pageRequest);
+        return getAllAdmin;
     }
 
     @Override
@@ -69,7 +59,6 @@ public class AdminServiceImpl implements AdminService {
     public UserResponse getById(String request) {
         Optional<Admin> optionalAdmin = adminRepository.findById(request);
         if (!optionalAdmin.isPresent()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found");
-
         return UserResponse.builder()
                 .id(optionalAdmin.get().getId())
                 .name(optionalAdmin.get().getName())
@@ -85,7 +74,6 @@ public class AdminServiceImpl implements AdminService {
     public UserResponse update(ProfileUpdateRequest request) {
         UserResponse findId = getById(request.getId());
         UserCredential userCredential =(UserCredential) userService.loadUserByUsername(findId.getEmail());
-
         Admin buildAdmin = Admin.builder()
                 .id(findId.getId())
                 .name(request.getName())
@@ -94,9 +82,7 @@ public class AdminServiceImpl implements AdminService {
                 .phoneNumber(request.getPhoneNumber())
                 .userCredential(userCredential)
                 .build();
-
         Admin admin = adminRepository.saveAndFlush(buildAdmin);
-
         return UserResponse.builder()
                 .id(admin.getId())
                 .name(admin.getName())
@@ -111,7 +97,6 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(rollbackFor = Exception.class)
     public String updatePassword(UpdatePasswordRequest request) {
         UserResponse admin = getById(request.getId());
-
         String updateUsercredential = userService.update(
                 UserUpdateRequest.builder()
                         .email(admin.getEmail())
@@ -119,7 +104,6 @@ public class AdminServiceImpl implements AdminService {
                         .new_password(request.getNew_password())
                         .build()
         );
-
         return updateUsercredential;
     }
 
@@ -131,5 +115,17 @@ public class AdminServiceImpl implements AdminService {
         adminRepository.deleteById(admin.getId());
         String delete = userService.delete(userCredential);
         return delete;
+    }
+
+    private static Specification<Admin> getAdminSpecification(SearchUserRequest request) {
+        Specification<Admin> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (request.getName() != null){
+                Predicate namePredicate = criteriaBuilder.like(root.get("name"), "%" +request.getName() + "%");
+                predicates.add(namePredicate);
+            }
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        };
+        return specification;
     }
 }

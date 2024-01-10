@@ -1,20 +1,26 @@
 package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Participant;
+<<<<<<< HEAD
+=======
+import com.enigma.ClassNexa.model.request.SearchUserRequest;
+
+>>>>>>> dev/putra
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.request.UserCreateRequest;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.response.UserResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ParticipantService {
     String create(UserCreateRequest request);
-    List<UserResponse> getAll();
+    Page<Participant> getAll(SearchUserRequest request);
+    void createList(List<Participant> participants);
     UserResponse getById(String request);
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
     Participant getByParticipantId(String id);
-
 }
