@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model;
+package com.enigma.ClassNexa.model.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ScheduleResponse {
+public class ScheduleRequest {
     private String id;
     private String meeting_link;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -18,7 +18,4 @@ public class ScheduleResponse {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date end_class;
     private String classes_id;
-    private String classes_name;
-    private String trainer;
-
 }

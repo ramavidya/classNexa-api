@@ -1,11 +1,9 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.model.ScheduleRequest;
-import com.enigma.ClassNexa.model.ScheduleResponse;
-import com.enigma.ClassNexa.model.WebResponse;
+import com.enigma.ClassNexa.model.request.ScheduleRequest;
+import com.enigma.ClassNexa.model.response.ScheduleResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.ScheduleService;
-import com.enigma.ClassNexa.service.impl.ScheduleServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

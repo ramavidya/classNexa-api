@@ -3,12 +3,12 @@ package com.enigma.ClassNexa.service.impl;
 import com.enigma.ClassNexa.entity.Classes;
 import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.entity.Trainer;
-import com.enigma.ClassNexa.model.ScheduleRequest;
-import com.enigma.ClassNexa.model.ScheduleResponse;
+import com.enigma.ClassNexa.model.request.ScheduleRequest;
+import com.enigma.ClassNexa.model.response.ScheduleResponse;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
-import com.enigma.ClassNexa.service.ClassCNServiceBambang;
+import com.enigma.ClassNexa.service.ClassesServiceBambang;
 import com.enigma.ClassNexa.service.ScheduleService;
-import com.enigma.ClassNexa.service.TrainerServicebamss;
+import com.enigma.ClassNexa.service.TrainerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,12 +22,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ClassCNServiceBambang classCNService;
-    private final TrainerServicebamss trainerService;
+    private final ClassesServiceBambang classCNService;
+    private final TrainerService trainerService;
 
     private ScheduleResponse toScheduleResponse(Schedule schedule){
         Classes byIdClass = classCNService.getById(schedule.getClasses_id().getId());
-        Trainer byIdTrainer = trainerService.getById(byIdClass.getTrainer().getId());
+        Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
         return ScheduleResponse.builder()
                 .id(schedule.getId())
                 .meeting_link(schedule.getMeeting_link())
@@ -58,7 +58,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<ScheduleResponse> scheduleResponses = new ArrayList<>();
         for (int i = 0; i<all.size();i++){
             Classes byIdClass = classCNService.getById(all.get(i).getClasses_id().getId());
-            Trainer byIdTrainer = trainerService.getById(byIdClass.getTrainer().getId());
+            Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
             ScheduleResponse scheduleResponse =ScheduleResponse.builder()
                     .id(all.get(i).getId())
                     .meeting_link(all.get(i).getMeeting_link())
@@ -104,7 +104,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Optional<Schedule> byId = scheduleRepository.findById(id);
         Classes byIdClass = classCNService.getById(byId.get().getClasses_id().getId());
-        Trainer byIdTrainer = trainerService.getById(byIdClass.getTrainer().getId());
+        Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
         ScheduleResponse scheduleResponse =ScheduleResponse.builder()
                 .id(byId.get().getId())
                 .meeting_link(byId.get().getMeeting_link())

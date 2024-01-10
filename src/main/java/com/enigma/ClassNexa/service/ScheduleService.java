@@ -1,8 +1,8 @@
 package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.model.ScheduleRequest;
-import com.enigma.ClassNexa.model.ScheduleResponse;
+import com.enigma.ClassNexa.model.request.ScheduleRequest;
+import com.enigma.ClassNexa.model.response.ScheduleResponse;
 
 import java.util.List;
 

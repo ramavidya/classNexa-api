@@ -2,6 +2,8 @@ package com.enigma.ClassNexa.repository;
 
 import com.enigma.ClassNexa.entity.Classes;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ClassCNRepositoryBambang extends JpaRepository<Classes, String> {
+@Repository
+public interface ClassesRepositoryBambang extends JpaRepository<Classes, String> {
 }

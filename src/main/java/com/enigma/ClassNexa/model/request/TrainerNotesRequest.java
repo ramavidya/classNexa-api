@@ -1,4 +1,4 @@
-package com.enigma.ClassNexa.model;
+package com.enigma.ClassNexa.model.request;
 
 import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.entity.Trainer;

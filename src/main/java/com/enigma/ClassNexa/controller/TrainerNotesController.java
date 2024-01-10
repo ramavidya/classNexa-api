@@ -1,17 +1,21 @@
 package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.TrainerNotes;
-import com.enigma.ClassNexa.model.ScheduleRequest;
-import com.enigma.ClassNexa.model.ScheduleResponse;
-import com.enigma.ClassNexa.model.TrainerNotesRequest;
-import com.enigma.ClassNexa.model.WebResponse;
+import com.enigma.ClassNexa.model.*;
+import com.enigma.ClassNexa.model.request.SearchTrainerNotesRequest;
+import com.enigma.ClassNexa.model.request.TrainerNotesRequest;
+import com.enigma.ClassNexa.model.response.PagingResponse;
+import com.enigma.ClassNexa.model.response.TrainerNotesResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.TrainerNotesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -21,8 +25,8 @@ public class TrainerNotesController {
 
     @PostMapping(path = "/api/notes")
     public ResponseEntity<?> create(@RequestBody TrainerNotesRequest request){
-        TrainerNotes trainerNotes = trainerNotesService.create(request);
-        WebResponse<TrainerNotes> response = WebResponse.<TrainerNotes>builder()
+        TrainerNotesResponse trainerNotes = trainerNotesService.create(request);
+        WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("Data Created")
                 .data(trainerNotes)
@@ -32,8 +36,8 @@ public class TrainerNotesController {
 
     @GetMapping(path = "/api/notes")
     public ResponseEntity<?> getAll(){
-        List<TrainerNotes> all = trainerNotesService.getAll();
-        WebResponse<List<TrainerNotes>> response = WebResponse.<List<TrainerNotes>>builder()
+        List<TrainerNotesResponse> all = trainerNotesService.getAll();
+        WebResponse<List<TrainerNotesResponse>> response = WebResponse.<List<TrainerNotesResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("All data schedule")
                 .data(all)
@@ -43,8 +47,8 @@ public class TrainerNotesController {
 
     @GetMapping(path = "/api/notes/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
-        TrainerNotes all = trainerNotesService.getById(id);
-        WebResponse<TrainerNotes> response = WebResponse.<TrainerNotes>builder()
+        TrainerNotesResponse all = trainerNotesService.getById(id);
+        WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("Get data schedule by id")
                 .data(all)
@@ -54,8 +58,8 @@ public class TrainerNotesController {
 
     @PutMapping(path = "/api/notes")
     public ResponseEntity<?> update(@RequestBody TrainerNotesRequest request){
-        TrainerNotes schedule = trainerNotesService.update(request);
-        WebResponse<TrainerNotes> response = WebResponse.<TrainerNotes>builder()
+        TrainerNotesResponse schedule = trainerNotesService.update(request);
+        WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("Data Updated")
                 .data(schedule)
@@ -73,4 +77,54 @@ public class TrainerNotesController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping(path = "/api/notes/param")
+    public ResponseEntity<?> getAllTrainerNotes(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String schedulee,
+            @RequestParam(required = false) String classes
+
+    ) {
+
+        SearchTrainerNotesRequest request = SearchTrainerNotesRequest.builder()
+                .page(page)
+                .size(size)
+                .classes(classes)
+                .schedule(schedulee)
+                .build();
+
+        Page<TrainerNotes> products = trainerNotesService.getAllTrainerNotes(request);
+
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(request.getPage())
+                .size(size)
+                .totalPages(products.getTotalPages())
+                .totalElements(products.getTotalElements())
+                .build();
+
+        List<TrainerNotesResponse> trainerNotesResponses = new ArrayList<>();
+        for(TrainerNotes trainerNotes : products.getContent()){
+
+            TrainerNotesResponse trainerNotesResponse = TrainerNotesResponse.builder()
+                    .id(trainerNotes.getId())
+                    .notes(trainerNotes.getNotes())
+                    .trainer_id(trainerNotes.getTrainer().getId())
+                    .trainer(trainerNotes.getTrainer().getName())
+                    .schedule_id(trainerNotes.getSchedule().getId())
+                    .start_class(trainerNotes.getSchedule().getStart_class().toString())
+                    .end_class(trainerNotes.getSchedule().getEnd_class().toString())
+                    .build();
+            trainerNotesResponses.add(trainerNotesResponse);
+        }
+
+        WebResponse<List<TrainerNotesResponse>> response = WebResponse.<List<TrainerNotesResponse>>builder()
+                .message("successfully get all product")
+                .status(HttpStatus.OK.getReasonPhrase())
+                .data(trainerNotesResponses)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
 }
