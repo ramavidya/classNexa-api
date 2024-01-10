@@ -51,11 +51,6 @@ public class ParticipantServiceImpl implements ParticipantService {
     }
 
     @Override
-    public List<UserResponse> getAll() {
-        return null;
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public Page<Participant> getAll(SearchUserRequest request) {
         Specification<Participant> specification = getParticipantSpecification(request);

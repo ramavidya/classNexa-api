@@ -15,7 +15,6 @@ public interface ParticipantService {
     String create(UserCreateRequest request);
     Page<Participant> getAll(SearchUserRequest request);
     void createList(List<Participant> participants);
-    List<UserResponse> getAll();
     UserResponse getById(String request);
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
