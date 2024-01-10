@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,17 +44,21 @@ public class DocumetationServiceImpl implements DocumetationService {
         Trainer byId = trainerService.getByTrainerId(request.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(request.getSchedule());
 
-        String projectname = "ClassNexa";
-        Path projectDirectory = Paths.get(System.getProperty("user.dir"), projectname);
-
-        String filePathString = projectDirectory.toAbsolutePath()+FILE_PATH2+multipartFile.getOriginalFilename();
+        UUID uuid = UUID.nameUUIDFromBytes(multipartFile.getOriginalFilename().getBytes());
 
         Documentation documentation = Documentation.builder()
-                .fileName(multipartFile.getOriginalFilename())
+                .fileName(String.valueOf(uuid)+".png")
                 .trainer(byId)
                 .schedule(byIdSchedule)
                 .build();
         Documentation save = documetationRepository.save(documentation);
+
+        String projectname = "ClassNexa";
+        Path projectDirectory = Paths.get(System.getProperty("user.dir"), projectname);
+
+        String filePathString = projectDirectory.toAbsolutePath()+FILE_PATH2+save.getFileName();
+
+        log.info(filePathString);
         multipartFile.transferTo(new File(filePathString));
         return save;
     }
