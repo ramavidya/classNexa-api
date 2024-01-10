@@ -44,7 +44,7 @@ public class ClassesServiceImpl implements ClassesService {
     @Transactional(rollbackFor = Exception.class)
     public ClassResponse create(ClassesRequest request) {
         validationUtils.validate(request.getTrainerId());
-        Trainer trainer = trainerService.getTrainerById(request.getTrainerId());
+        Trainer trainer = trainerService.getByTrainerId(request.getTrainerId());
         Classes classes = Classes.builder()
                 .name(request.getName())
                 .trainer(trainer)
@@ -85,7 +85,7 @@ public class ClassesServiceImpl implements ClassesService {
 
         Optional<Classes> classes = classesRepository.findById(request.getId());
         if (classes.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Class Room Not Found");
-        Trainer trainer = trainerService.getTrainerById(request.getTrainerId());
+        Trainer trainer = trainerService.getByTrainerId(request.getTrainerId());
         Classes room = classes.get();
         room.setName(request.getName());
         room.setTrainer(trainer);

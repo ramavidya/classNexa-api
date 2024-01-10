@@ -131,7 +131,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Trainer getTrainerById(String id) {
+    public Trainer getByTrainerId(String id) {
         Optional<Trainer> optionalParticipant = trainerRepository.findById(id);
 
         if (optionalParticipant.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer Not Found");
