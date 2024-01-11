@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class AttendResponse {
-    private String id;
 
     private String scheduleId;
     private Timestamp classStartedAt;

@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Table(name = "t_schedule")
 @Entity
 @Builder
-public class ScheduleRama {
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -29,5 +29,5 @@ public class ScheduleRama {
 
     @ManyToOne
     @JoinColumn(name = "classes_id", referencedColumnName = "id")
-    private ClassesRama ClassesRama;
+    private Classes Classes;
 }

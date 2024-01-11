@@ -3,6 +3,7 @@ package com.enigma.ClassNexa.service.impl;
 import com.enigma.ClassNexa.entity.Attendance;
 import com.enigma.ClassNexa.repository.AttendanceRepository;
 import com.enigma.ClassNexa.service.AttendanceService;
+import com.enigma.ClassNexa.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
+    private final ValidationUtils validationUtils;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Attendance getAttendanceById(String id) {
@@ -22,6 +24,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Attendance create(Attendance request) {
+        validationUtils.validate(request);
         Attendance attendance = Attendance.builder()
                 .category(request.getCategory())
                 .build();

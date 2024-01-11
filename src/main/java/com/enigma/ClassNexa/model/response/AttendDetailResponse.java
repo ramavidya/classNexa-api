@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class AttendDetailResponse {
+    private String id;
     private String ParticipantId;
     private String participantName;
     private String info;

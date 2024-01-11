@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Builder
 public class SingleAttendResponse {
-    private String id;
     private String scheduleId;
     private Timestamp classStartedAt;
     private AttendDetailResponse attendDetailResponse;

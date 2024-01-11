@@ -1,8 +1,8 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.ClassNexa.entity.ScheduleRama;
+import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.repository.ScheduleRepositoryRama;
-import com.enigma.ClassNexa.service.ScheduleServiceRama;
+import com.enigma.ClassNexa.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,19 +10,19 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ScheduleImplRama implements ScheduleServiceRama {
+public class ScheduleImpl implements ScheduleService {
     private final ScheduleRepositoryRama scheduleRepositoryRama;
     @Override
-    public ScheduleRama getByIdSchedule(String id) {
-        Optional<ScheduleRama> byId = scheduleRepositoryRama.findById(id);
-        ScheduleRama scheduleRama = ScheduleRama.builder()
+    public Schedule getByIdSchedule(String id) {
+        Optional<Schedule> byId = scheduleRepositoryRama.findById(id);
+        Schedule schedule = Schedule.builder()
                 .id(byId.get().getId())
                 .meetingLink(byId.get().getMeetingLink())
                 .startClass(byId.get().getStartClass())
                 .endClass(byId.get().getEndClass())
-                .ClassesRama(byId.get().getClassesRama())
+                .Classes(byId.get().getClasses())
                 .build();
-        return scheduleRama;
+        return schedule;
 
     }
 }

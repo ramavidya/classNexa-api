@@ -1,6 +1,6 @@
 package com.enigma.ClassNexa.model.request;
 
-import com.enigma.ClassNexa.entity.ParticipantRama;
+import com.enigma.ClassNexa.entity.Participant;
 import lombok.*;
 
 import java.util.List;
@@ -13,5 +13,5 @@ import java.util.List;
 public class UpdateClassesRequest {
     private String classesId;
     private String name;
-    private List<ParticipantRama> participantRamas;
+    private List<Participant> participants;
 }

@@ -17,7 +17,7 @@ public class Attend {
 
     @ManyToOne
     @JoinColumn(name = "participant_id")
-    private ParticipantRama participantRama;
+    private Participant participant;
 
     @ManyToOne
     @JoinColumn(name = "attendance_id")
@@ -25,5 +25,5 @@ public class Attend {
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
-    private ScheduleRama scheduleRama;
+    private Schedule schedule;
 }

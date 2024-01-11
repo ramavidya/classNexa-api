@@ -1,8 +1,8 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.ClassNexa.entity.ParticipantRama;
+import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.model.response.WebResponse;
-import com.enigma.ClassNexa.service.ParticipantServiceRama;
+import com.enigma.ClassNexa.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,24 +15,24 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ParticipantControllerRama {
-    private final ParticipantServiceRama participantServiceRama;
+    private final ParticipantService participantService;
     @GetMapping(path = "/api/participant/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
-        ParticipantRama participantRamaById = participantServiceRama.getParticipantById(id);
-        WebResponse<ParticipantRama> response = WebResponse.<ParticipantRama>builder()
+        Participant participantById = participantService.getByParticipantId(id);
+        WebResponse<Participant> response = WebResponse.<Participant>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("success")
-                .data(participantRamaById)
+                .data(participantById)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @GetMapping(path = "/api/participant")
     public ResponseEntity<?> getAll(){
-        List<ParticipantRama> allParticipantRama = participantServiceRama.getAllParticipant();
-        WebResponse<List<ParticipantRama>> response = WebResponse.<List<ParticipantRama>>builder()
+        List<Participant> allParticipant = participantService.getAllParticipant();
+        WebResponse<List<Participant>> response = WebResponse.<List<Participant>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("success")
-                .data(allParticipantRama)
+                .data(allParticipant)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
