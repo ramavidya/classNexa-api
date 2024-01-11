@@ -139,8 +139,8 @@ public class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Participant getByParticipantId(String participantId) {
-        return participantRepository.findById(participantId).orElse(null);
+    public Participant getByParticipantId(String id) {
+        return participantRepository.findById(id).orElse(null);
     }
 
 

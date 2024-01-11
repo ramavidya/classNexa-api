@@ -20,6 +20,6 @@ public interface ParticipantService {
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
-    Participant getByParticipantId(String participantId);
+    Participant getByParticipantId(String id);
     List<Participant> getAllParticipant();
 }
