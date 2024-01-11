@@ -1,7 +1,6 @@
 package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Attendance;
-import com.enigma.ClassNexa.entity.Participant;
 
 import java.util.List;
 

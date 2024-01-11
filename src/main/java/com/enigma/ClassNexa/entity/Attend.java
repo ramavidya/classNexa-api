@@ -3,8 +3,6 @@ package com.enigma.ClassNexa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Setter
 @Getter
 @AllArgsConstructor
@@ -19,7 +17,7 @@ public class Attend {
 
     @ManyToOne
     @JoinColumn(name = "participant_id")
-    private Participant participant;
+    private ParticipantRama participantRama;
 
     @ManyToOne
     @JoinColumn(name = "attendance_id")
@@ -27,5 +25,5 @@ public class Attend {
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
-    private Schedule schedule;
+    private ScheduleRama scheduleRama;
 }

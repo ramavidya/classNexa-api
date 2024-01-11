@@ -1,11 +1,11 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.ClassNexa.dto.response.WebResponse;
-import com.enigma.ClassNexa.dto.request.AttendRequest;
-import com.enigma.ClassNexa.dto.request.SearchAttendRequest;
-import com.enigma.ClassNexa.dto.request.UpdateAttendRequest;
-import com.enigma.ClassNexa.dto.response.AttendResponse;
-import com.enigma.ClassNexa.dto.response.SingleAttendResponse;
+import com.enigma.ClassNexa.modul.response.WebResponse;
+import com.enigma.ClassNexa.modul.request.AttendRequest;
+import com.enigma.ClassNexa.modul.request.SearchAttendRequest;
+import com.enigma.ClassNexa.modul.request.UpdateAttendRequest;
+import com.enigma.ClassNexa.modul.response.AttendResponse;
+import com.enigma.ClassNexa.modul.response.SingleAttendResponse;
 import com.enigma.ClassNexa.service.AttendService;
 import com.enigma.ClassNexa.service.AttendanceService;
 import lombok.RequiredArgsConstructor;

@@ -1,10 +1,9 @@
 package com.enigma.ClassNexa.repository;
 
-import com.enigma.ClassNexa.entity.Classes;
+import com.enigma.ClassNexa.entity.TrainerRama;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClassesRepository extends JpaRepository<Classes, String> {
-
+public interface TrainerRepositoryRama extends JpaRepository<TrainerRama, String> {
 }

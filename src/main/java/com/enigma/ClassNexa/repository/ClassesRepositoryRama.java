@@ -1,9 +1,10 @@
 package com.enigma.ClassNexa.repository;
 
-import com.enigma.ClassNexa.entity.UserCredential;
+import com.enigma.ClassNexa.entity.ClassesRama;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserCredentialRepository extends JpaRepository<UserCredential, String> {
+public interface ClassesRepositoryRama extends JpaRepository<ClassesRama, String> {
+
 }

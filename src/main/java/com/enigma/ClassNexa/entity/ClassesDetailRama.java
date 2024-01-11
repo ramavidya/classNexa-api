@@ -12,15 +12,15 @@ import java.util.List;
 @Table(name = "m_classes_detail")
 @Entity
 @Builder
-public class ClassesDetail {
+public class ClassesDetailRama {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @OneToMany
-    private List<Participant> participants;
+    private List<ParticipantRama> participantRamas;
 
     @ManyToOne
-    private Trainer trainer;
+    private TrainerRama trainer;
 }

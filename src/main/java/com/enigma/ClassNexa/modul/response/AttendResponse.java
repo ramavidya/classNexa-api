@@ -1,17 +1,20 @@
-package com.enigma.ClassNexa.dto.response;
+package com.enigma.ClassNexa.modul.response;
 
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SingleAttendResponse {
+public class AttendResponse {
     private String id;
+
     private String scheduleId;
     private Timestamp classStartedAt;
-    private AttendDetailResponse attendDetailResponse;
+
+    private List<AttendDetailResponse> attendDetailResponses;
 }

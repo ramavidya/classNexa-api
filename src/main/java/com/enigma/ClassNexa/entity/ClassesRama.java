@@ -7,24 +7,15 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "m_participant")
+@Table(name = "m_classes")
 @Entity
 @Builder
-public class Participant {
-
+public class ClassesRama {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String name;
 
-    private String address;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    private String gender;
-
-    @OneToOne
-    private UserCredential userCredential;
 }

@@ -7,10 +7,10 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "m_trainer")
+@Table(name = "m_participant")
 @Entity
 @Builder
-public class Trainer {
+public class ParticipantRama {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,5 +26,5 @@ public class Trainer {
     private String gender;
 
     @OneToOne
-    private UserCredential userCredential;
+    private UserCredentialRama userCredentialRama;
 }

@@ -10,7 +10,7 @@ import lombok.*;
 @Table(name = "m_user_credential")
 @Entity
 @Builder
-public class UserCredential {
+public class UserCredentialRama {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
