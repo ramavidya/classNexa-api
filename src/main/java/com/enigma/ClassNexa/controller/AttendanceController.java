@@ -1,7 +1,7 @@
 package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.Attendance;
-import com.enigma.ClassNexa.modul.response.WebResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

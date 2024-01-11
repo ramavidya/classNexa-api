@@ -1,8 +1,7 @@
-package com.enigma.ClassNexa.modul.response;
+package com.enigma.ClassNexa.model.response;
 
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
