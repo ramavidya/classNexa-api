@@ -2,6 +2,7 @@ package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.Documentation;
 import com.enigma.ClassNexa.model.request.SearchDocumentationRequest;
+import com.enigma.ClassNexa.model.response.DocumentationResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.DocumetationService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -28,7 +30,7 @@ public class DocumetationController {
                 .trainer(trainer)
                 .schedule(schedule)
                 .build();
-        Documentation response = documetationService.create(multipartFile, request);
+        DocumentationResponse response = documetationService.create(multipartFile, request);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -43,18 +45,30 @@ public class DocumetationController {
     @GetMapping(path = "/api/documentation")
     public ResponseEntity<?> getAll(){
         List<Documentation> all = documetationService.getAll();
-        WebResponse<List<Documentation>> response = WebResponse.<List<Documentation>>builder()
+        List<DocumentationResponse> documentationResponses = new ArrayList<>();
+        for (int i=0;i< all.size();i++){
+            DocumentationResponse response = DocumentationResponse.builder()
+                    .id(all.get(i).getId())
+                    .filename(all.get(i).getFileName())
+                    .triner_id(all.get(i).getTrainer().getId())
+                    .trainer(all.get(i).getTrainer().getName())
+                    .schedule_id(all.get(i).getSchedule().getId())
+                    .date(String.valueOf(all.get(i).getSchedule().getStart_class()))
+                    .build();
+            documentationResponses.add(response);
+        }
+        WebResponse<List<DocumentationResponse>> response = WebResponse.<List<DocumentationResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("All data schedule")
-                .data(all)
+                .data(documentationResponses)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping(path = "/api/documentation/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
-        Documentation all = documetationService.getById(id);
-        WebResponse<Documentation> response = WebResponse.<Documentation>builder()
+        DocumentationResponse all = documetationService.getById(id);
+        WebResponse<DocumentationResponse> response = WebResponse.<DocumentationResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("Get data schedule by id")
                 .data(all)
@@ -72,7 +86,7 @@ public class DocumetationController {
                 .trainer(trainer)
                 .schedule(schedule)
                 .build();
-        Documentation response = documetationService.update(multipartFile, request);
+        DocumentationResponse response = documetationService.update(multipartFile, request);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
