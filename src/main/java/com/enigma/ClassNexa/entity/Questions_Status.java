@@ -3,30 +3,20 @@ package com.enigma.ClassNexa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
-
-@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "m_classes")
-public class Classes {
+@Builder
+@Table(name = "m_questions_status")
+public class Questions_Status {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    private Trainer trainer;
-
-
-
+    @Column(name = "status", columnDefinition = "TINYINT(1)")
+    private boolean status;
 
 }
-
-
