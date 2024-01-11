@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ public class DocumetationController {
     private final DocumetationService documetationService;
 
     @PostMapping(path = "/api/documentation/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> storeFilesIntoDB(@RequestPart(name = "multipartFile") MultipartFile multipartFile,
                                                    @RequestParam String trainer,
                                                    @RequestParam String schedule) throws IOException {
@@ -43,6 +45,7 @@ public class DocumetationController {
     }
 
     @GetMapping(path = "/api/documentation")
+    @PreAuthorize("hasRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getAll(){
         List<Documentation> all = documetationService.getAll();
         List<DocumentationResponse> documentationResponses = new ArrayList<>();
@@ -66,6 +69,7 @@ public class DocumetationController {
     }
 
     @GetMapping(path = "/api/documentation/{id}")
+    @PreAuthorize("hasRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getById(@PathVariable String id){
         DocumentationResponse all = documetationService.getById(id);
         WebResponse<DocumentationResponse> response = WebResponse.<DocumentationResponse>builder()
@@ -77,6 +81,7 @@ public class DocumetationController {
     }
 
     @PutMapping(path = "/api/documentation/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> update(@RequestPart(name = "multipartFile") MultipartFile multipartFile,
                                               @RequestParam String id,
                                               @RequestParam String trainer,
@@ -92,6 +97,7 @@ public class DocumetationController {
     }
 
     @DeleteMapping(path = "/api/documentation/{id}")
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> delete(@PathVariable String id){
         String all = documetationService.delete(id);
         WebResponse<String> response = WebResponse.<String>builder()

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ public class TrainerNotesController {
     private final TrainerNotesService trainerNotesService;
 
     @PostMapping(path = "/api/notes")
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> create(@RequestBody TrainerNotesRequest request){
         TrainerNotesResponse trainerNotes = trainerNotesService.create(request);
         WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
@@ -35,6 +37,7 @@ public class TrainerNotesController {
     }
 
     @GetMapping(path = "/api/notes")
+    @PreAuthorize("hasAnyRole('TRAINER','PARTICIPANT')")
     public ResponseEntity<?> getAll(){
         List<TrainerNotesResponse> all = trainerNotesService.getAll();
         WebResponse<List<TrainerNotesResponse>> response = WebResponse.<List<TrainerNotesResponse>>builder()
@@ -46,6 +49,7 @@ public class TrainerNotesController {
     }
 
     @GetMapping(path = "/api/notes/{id}")
+    @PreAuthorize("hasAnyRole('TRAINER','PARTICIPANT')")
     public ResponseEntity<?> getById(@PathVariable String id){
         TrainerNotesResponse all = trainerNotesService.getById(id);
         WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
@@ -57,6 +61,7 @@ public class TrainerNotesController {
     }
 
     @PutMapping(path = "/api/notes")
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> update(@RequestBody TrainerNotesRequest request){
         TrainerNotesResponse schedule = trainerNotesService.update(request);
         WebResponse<TrainerNotesResponse> response = WebResponse.<TrainerNotesResponse>builder()
@@ -68,6 +73,7 @@ public class TrainerNotesController {
     }
 
     @DeleteMapping(path = "/api/notes/{id}")
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> delete(@PathVariable String id){
         String all = trainerNotesService.delete(id);
         WebResponse<String> response = WebResponse.<String>builder()
@@ -79,6 +85,7 @@ public class TrainerNotesController {
     }
 
     @GetMapping(path = "/api/notes/param")
+    @PreAuthorize("hasAnyRole('TRAINER','PARTICIPANT')")
     public ResponseEntity<?> getAllTrainerNotes(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,

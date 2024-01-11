@@ -1,16 +1,16 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.ClassNexa.entity.Classes;
-import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.entity.Trainer;
+import com.enigma.ClassNexa.entity.*;
 import com.enigma.ClassNexa.model.request.ScheduleRequest;
 import com.enigma.ClassNexa.model.response.ScheduleResponse;
+import com.enigma.ClassNexa.repository.DetailClassParticipantRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
-import com.enigma.ClassNexa.service.ClassesServiceBambang;
-import com.enigma.ClassNexa.service.ScheduleService;
-import com.enigma.ClassNexa.service.TrainerService;
+import com.enigma.ClassNexa.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,10 +21,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ClassesServiceBambang classCNService;
     private final TrainerService trainerService;
+    private final JavaMailSender javaMailSender;
+    private final ClassDetailService classDetailService;
+    private final ParticipantService participantService;
+    private final UserService userService;
+    private final DetailClassParticipantRepository detailClassParticipantRepository;
 
     private ScheduleResponse toScheduleResponse(Schedule schedule){
         Classes byIdClass = classCNService.getById(schedule.getClasses_id().getId());
@@ -40,6 +46,16 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .build();
     }
 
+    public void sendEmail(String to, String message) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom("priyqmbido@gmail.com");
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setSubject("Selamat Datang di ClassNexa");
+        simpleMailMessage.setText(message);
+
+        javaMailSender.send(simpleMailMessage);
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
@@ -51,7 +67,28 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .classes_id(byIdClass)
                 .build();
         Schedule save = scheduleRepository.save(schedule);
+
+        log.info(save.getClasses_id().getId());
+        List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(save.getClasses_id().getId());
+
+        for (int i=0;i<byClassId.size();i++){
+            Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
+            UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
+
+            String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp"+byParticipantId.getName()+
+                    "! Dengan antusiasme, kami ingin mengucapkan selamat datang kepada Anda dan berharap bahwa pengalaman yang Anda dapatkan di sini akan menjadi perjalanan yang luar biasa.\n" +
+                    "\n" +
+                    "Di bootcamp ini, Anda akan memiliki kesempatan untuk belajar, berkolaborasi, dan berkembang bersama para profesional terbaik dalam industri ini. Kami percaya bahwa Anda memiliki potensi besar dan kami sangat bersemangat untuk melihat kontribusi luar biasa yang akan Anda berikan.\n" +
+                    "\n" +
+                    "Jangan ragu untuk bertanya kepada instruktur atau sesama peserta jika Anda membutuhkan bantuan dalam menjalani program ini. Jadilah terbuka untuk belajar hal-hal baru dan manfaatkan setiap kesempatan yang ada.\n" +
+                    "\n" +
+                    "Tetap semangat, jadilah diri Anda sendiri, dan nikmati perjalanan ini. Kami yakin Anda akan menghasilkan karya-karya luar biasa.\n" +
+                    "\n" +
+                    "Salam hangat, Tim ClassNexa";
+            sendEmail(userCredential.getEmail(), message);
+        }
         return toScheduleResponse(save);
+
     }
 
     @Override

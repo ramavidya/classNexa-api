@@ -3,6 +3,8 @@ package com.enigma.ClassNexa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -29,4 +31,8 @@ public class Participant {
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id")
     private UserCredential userCredential;
 
+    @OneToMany(mappedBy = "participant", cascade = CascadeType.PERSIST)
+    private List<Questions> questions;
+
 }
+

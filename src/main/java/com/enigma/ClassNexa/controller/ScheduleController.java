@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping(path = "/api/schedule")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> create(@RequestBody ScheduleRequest request){
         ScheduleResponse schedule = scheduleService.create(request);
         WebResponse<ScheduleResponse> response = WebResponse.<ScheduleResponse>builder()
@@ -31,6 +33,7 @@ public class ScheduleController {
     }
 
     @GetMapping(path = "/api/schedule")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAll(){
         List<ScheduleResponse> all = scheduleService.getAll();
         WebResponse<List<ScheduleResponse>> response = WebResponse.<List<ScheduleResponse>>builder()
@@ -42,6 +45,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping(path = "/api/schedule/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@PathVariable String id){
         String all = scheduleService.delete(id);
         WebResponse<String> response = WebResponse.<String>builder()
@@ -53,6 +57,7 @@ public class ScheduleController {
     }
 
     @PutMapping(path = "/api/schedule")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@RequestBody ScheduleRequest request){
         ScheduleResponse schedule = scheduleService.update(request);
         WebResponse<ScheduleResponse> response = WebResponse.<ScheduleResponse>builder()
@@ -64,6 +69,7 @@ public class ScheduleController {
     }
 
     @GetMapping(path = "/api/schedule/{id}")
+    @PreAuthorize("hasAnyRole('PARTICIPANT','TRAINER')")
     public ResponseEntity<?> getById(@PathVariable String id){
         ScheduleResponse all = scheduleService.getById(id);
         WebResponse<ScheduleResponse> response = WebResponse.<ScheduleResponse>builder()
