@@ -11,11 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -47,7 +49,7 @@ public class QuestionsController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(webResponse);
     }
-
+//    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateStatusRequest request){
         QuestionsResponse update = questionsService.update(request);
@@ -67,7 +69,7 @@ public class QuestionsController {
             @RequestParam(required = false) String participantName,
             @RequestParam(required = false) String classesName,
             @RequestParam(required = false) String trainerName,
-            @RequestParam(required = false) LocalDateTime start_classes,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start_classes,
             @RequestParam(required = false) boolean status
     ) {
 
@@ -75,7 +77,7 @@ public class QuestionsController {
         SearchQuestionsRequest request = SearchQuestionsRequest.builder()
                 .page(page)
                 .size(size)
-                .classeName(classesName)
+                .classesName(classesName)
                 .trainerName(trainerName)
                 .participantName(participantName)
                 .start_class(start_classes)
@@ -84,11 +86,19 @@ public class QuestionsController {
 
         Page<QuestionsResponse> responses = questionsService.getAll(request);
 
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .totalPages(responses.getTotalPages())
+                .totalElements(responses.getTotalElements())
+                .build();
+
 
         WebResponse<List<QuestionsResponse>> response = WebResponse.<List<QuestionsResponse>>builder()
                 .message("successfully get all questions")
                 .status(HttpStatus.OK.getReasonPhrase())
                 .data(responses.getContent())
+                .pagingResponse(pagingResponse)
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);

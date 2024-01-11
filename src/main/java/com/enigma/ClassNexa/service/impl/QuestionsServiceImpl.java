@@ -10,8 +10,10 @@ import com.enigma.ClassNexa.model.response.QuestionsResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.repository.QuestionsRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
+import com.enigma.ClassNexa.service.ParticipantService;
 import com.enigma.ClassNexa.service.QuestionsService;
 import com.enigma.ClassNexa.service.QuestionsStatusService;
+import com.enigma.ClassNexa.service.ScheduleService;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -44,6 +46,11 @@ public class QuestionsServiceImpl implements QuestionsService {
 
         private final ScheduleRepository scheduleRepository;
 
+
+        private final ParticipantService participantService;
+
+        private final ScheduleService scheduleService;
+
         private final QuestionsStatusService questions_status_service;
 
         @Override
@@ -57,15 +64,9 @@ public class QuestionsServiceImpl implements QuestionsService {
         @Transactional(rollbackFor = Exception.class)
         public QuestionsResponse create(QuestionsRequest request) {
 
-                Optional<Participant> optionalParticipant = participantRepository.findById(request.getParticipantId());
-                if (optionalParticipant.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found for the question");
-                }
+                Participant participant = participantService.getByParticipantId(request.getParticipantId());
 
-                Optional<Schedule> optionalSchedule = scheduleRepository.findById(request.getScheduleId());
-                if (optionalSchedule.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
-                }
+                Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
 
                 Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
@@ -75,8 +76,8 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .course(request.getCourse())
                         .chapter(request.getChapter())
                         .questionsStatus(questions_status)
-                        .participant(optionalParticipant.get())
-                        .schedule(optionalSchedule.get())
+                        .participant(participant)
+                        .schedule(schedule)
                         .build();
 
 
@@ -103,10 +104,8 @@ public class QuestionsServiceImpl implements QuestionsService {
                 Optional<Questions> optionalQuestions = questionsRepository.findById(request.getQuestionsId());
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
 
-                Optional<Schedule> optionalSchedule = scheduleRepository.findById(request.getScheduleId());
-                if (optionalSchedule.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
-                }
+
+                Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
 
                 Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
@@ -153,10 +152,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found for the question");
                 }
 
-                Optional<Schedule> optionalSchedule = scheduleRepository.findById(questions.getSchedule().getId());
-                if (optionalSchedule.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for the question");
-                }
+                Schedule schedule = scheduleService.getByIdSchedule(questions.getSchedule().getId());
 
 
                 List<ParticipantQuestionsResponse> questionsResponses = new ArrayList<>();
@@ -185,11 +181,11 @@ public class QuestionsServiceImpl implements QuestionsService {
 
                 QuestionsResponse trainerQuestionsResponse = QuestionsResponse.builder()
                         .questionsId(questions.getId())
-                        .className(optionalSchedule.get().getClasses().getName())
-                        .trainerName(optionalSchedule.get().getClasses().getTrainer().getName())
+                        .className(schedule.getClasses_id().getName())
+                        .trainerName(schedule.getClasses_id().getTrainer().getName())
                         .participantQuestions(questionsResponses)
-                        .startClasses(optionalSchedule.get().getStart_class().toLocalDateTime())
-                        .endClasses(optionalSchedule.get().getEnd_class().toLocalDateTime())
+                        .startClasses(schedule.getStart_class())
+                        .endClasses(schedule.getEnd_class())
                         .build();
 
 
@@ -210,18 +206,18 @@ public class QuestionsServiceImpl implements QuestionsService {
                                 predicates.add(participantNamePredicate);
                         }
 
-                        if (request.getClasseName() != null) {
+                        if (request.getClassesName() != null) {
                                 Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
-                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes", JoinType.INNER);
+                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes_id", JoinType.INNER);
                                 Predicate classNamePredicate = criteriaBuilder.like(
-                                        classesJoin.get("name"), "%" + request.getClasseName() + "%"
+                                        classesJoin.get("name"), "%" + request.getClassesName() + "%"
                                 );
                                 predicates.add(classNamePredicate);
                         }
 
                         if (request.getTrainerName() != null) {
                                 Join<Questions, Schedule> scheduleJoin = root.join("schedule", JoinType.INNER);
-                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes", JoinType.INNER);
+                                Join<Schedule, Classes> classesJoin = scheduleJoin.join("classes_id", JoinType.INNER);
                                 Join<Classes, Trainer> trainerJoin = classesJoin.join("trainer", JoinType.INNER);
                                 Predicate trainerNamePredicate = criteriaBuilder.like(
                                         trainerJoin.get("name"), "%" + request.getTrainerName() + "%"

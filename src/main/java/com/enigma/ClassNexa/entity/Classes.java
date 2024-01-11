@@ -3,12 +3,14 @@ package com.enigma.ClassNexa.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
+
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 @Table(name = "m_classes")
 public class Classes {
 
@@ -21,4 +23,10 @@ public class Classes {
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
+
+
+
+
 }
+
+

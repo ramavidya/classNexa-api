@@ -10,6 +10,7 @@ import lombok.*;
 public class WebResponse<T> {
     private String status;
     private String message;
+    private PagingResponse pagingResponse;
     private T data;
 }
 

@@ -1,16 +1,13 @@
 package com.enigma.ClassNexa.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
+@Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@AllArgsConstructor
 @Builder
 @Table(name = "m_trainer")
 public class Trainer {
@@ -25,10 +22,12 @@ public class Trainer {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-    
+
     private String gender;
 
-
+    @OneToOne
+    @JoinColumn(name = "user_credential_id", referencedColumnName = "id")
+    private UserCredential userCredential;
 
 
 }

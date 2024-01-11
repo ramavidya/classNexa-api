@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.List;
 public class QuestionsStatusController {
     private final QuestionsStatusService questions_status_service;
 
-
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createQuestionsStatus(@RequestBody QuestionStatusRequest request) {
         QuestionsStatusResponse questions = questions_status_service.create(request);
@@ -32,7 +33,7 @@ public class QuestionsStatusController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
-
+//    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllStatus(
             @RequestParam(defaultValue = "1") Integer page,
@@ -56,7 +57,7 @@ public class QuestionsStatusController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
+//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuestionsById(@PathVariable String id) {
         questions_status_service.deleteById(id);

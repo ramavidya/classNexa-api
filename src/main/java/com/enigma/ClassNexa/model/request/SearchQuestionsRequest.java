@@ -1,10 +1,12 @@
 package com.enigma.ClassNexa.model.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Getter
@@ -19,8 +21,9 @@ public class SearchQuestionsRequest {
     private Integer page;
     private Integer size;
     private String participantName;
-    private String classeName;
+    private String classesName;
     private String trainerName;
-    private LocalDateTime start_class;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date start_class;
     private boolean status;
 }
