@@ -12,6 +12,7 @@ import com.enigma.ClassNexa.service.TrainerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
         Classes byIdClass = classCNService.getById(request.getClasses_id());
         Schedule schedule = Schedule.builder()
@@ -53,6 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<ScheduleResponse> getAll() {
         List<Schedule> all = scheduleRepository.findAll();
         List<ScheduleResponse> scheduleResponses = new ArrayList<>();
@@ -75,12 +78,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String delete(String id) {
         scheduleRepository.deleteById(id);
         return "ok";
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse update(ScheduleRequest request) {
 
         Optional<Schedule> byIdSchedule = scheduleRepository.findById(request.getId());
@@ -99,6 +104,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse getById(String id) {
         if (id.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ID schedule not found");
 
@@ -118,6 +124,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Schedule getByIdSchedule(String id) {
         Optional<Schedule> byId = scheduleRepository.findById(id);
         Schedule schedule = Schedule.builder()

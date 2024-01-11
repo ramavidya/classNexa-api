@@ -5,6 +5,7 @@ import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.model.DocumentationClaim;
 import com.enigma.ClassNexa.model.request.SearchDocumentationRequest;
+import com.enigma.ClassNexa.model.response.DocumentationResponse;
 import com.enigma.ClassNexa.repository.DocumetationRepository;
 import com.enigma.ClassNexa.service.DocumetationService;
 import com.enigma.ClassNexa.service.ScheduleService;
@@ -35,12 +36,23 @@ public class DocumetationServiceImpl implements DocumetationService {
     private final ScheduleService scheduleService;
     private final DocumetationRepository documetationRepository;
 
+    private DocumentationResponse toDocumentationResponse(Documentation documentation){
+        return DocumentationResponse.builder()
+                .id(documentation.getId())
+                .filename(documentation.getFileName())
+                .triner_id(documentation.getTrainer().getId())
+                .trainer(documentation.getTrainer().getName())
+                .schedule_id(documentation.getSchedule().getId())
+                .date(String.valueOf(documentation.getSchedule().getStart_class()))
+                .build();
+    }
+
 
 //    private final String FILE_PATH = "classpath:static"+"\n"+"mage";
     private final String FILE_PATH2 = "/src/main/resources/image/";
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Documentation create(MultipartFile multipartFile, SearchDocumentationRequest request) throws IOException {
+    public DocumentationResponse create(MultipartFile multipartFile, SearchDocumentationRequest request) throws IOException {
         Trainer byId = trainerService.getByTrainerId(request.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(request.getSchedule());
 
@@ -60,7 +72,7 @@ public class DocumetationServiceImpl implements DocumetationService {
 
         log.info(filePathString);
         multipartFile.transferTo(new File(filePathString));
-        return save;
+        return toDocumentationResponse(save);
     }
 
     @Override
@@ -81,13 +93,15 @@ public class DocumetationServiceImpl implements DocumetationService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<Documentation> getAll() {
         List<Documentation> all = documetationRepository.findAll();
         return all;
     }
 
     @Override
-    public Documentation getById(String id) {
+    @Transactional(rollbackFor = Exception.class)
+    public DocumentationResponse getById(String id) {
         Optional<Documentation> byId = documetationRepository.findById(id);
         Documentation documentation = Documentation.builder()
                 .id(id)
@@ -95,11 +109,12 @@ public class DocumetationServiceImpl implements DocumetationService {
                 .trainer(byId.get().getTrainer())
                 .schedule(byId.get().getSchedule())
                 .build();
-        return documentation;
+        return toDocumentationResponse(documentation);
     }
 
     @Override
-    public Documentation update(MultipartFile multipartFile, SearchDocumentationRequest documentation) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public DocumentationResponse update(MultipartFile multipartFile, SearchDocumentationRequest documentation) throws IOException {
         Trainer byId = trainerService.getByTrainerId(documentation.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(documentation.getSchedule());
 
@@ -116,10 +131,11 @@ public class DocumetationServiceImpl implements DocumetationService {
                 .build();
         Documentation save = documetationRepository.save(documentation1);
         multipartFile.transferTo(new File(filePathString));
-        return save;
+        return toDocumentationResponse(save);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String delete(String id) {
         documetationRepository.deleteById(id);
         return "ok";

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TrainerNotesResponse create(TrainerNotesRequest request) {
         Trainer byIdTrainer = trainerService.getByTrainerId(request.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(request.getSchedule());
@@ -60,6 +62,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<TrainerNotesResponse> getAll() {
         List<TrainerNotes> all = trainerNotesRepository.findAll();
         List<TrainerNotesResponse> trainerNotes = new ArrayList<>();
@@ -77,6 +80,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TrainerNotesResponse getById(String id) {
         Optional<TrainerNotes> byId = trainerNotesRepository.findById(id);
         TrainerNotes trainerNotes = TrainerNotes.builder()
@@ -89,6 +93,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public TrainerNotesResponse update(TrainerNotesRequest trainerNotes) {
         Optional<TrainerNotes> byId = trainerNotesRepository.findById(trainerNotes.getId());
         Trainer byId1 = trainerService.getByTrainerId(trainerNotes.getTrainer());
@@ -106,12 +111,14 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String delete(String id) {
         trainerNotesRepository.deleteById(id);
         return "ok";
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Page<TrainerNotes> getAllTrainerNotes(SearchTrainerNotesRequest request) {
         if (request.getPage()<=0)request.setPage(1);
         PageRequest pageable = PageRequest.of(request.getPage()-1, request.getSize());
