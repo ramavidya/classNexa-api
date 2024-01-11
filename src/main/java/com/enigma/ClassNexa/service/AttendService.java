@@ -1,10 +1,10 @@
 package com.enigma.ClassNexa.service;
 
-import com.enigma.ClassNexa.modul.request.AttendRequest;
-import com.enigma.ClassNexa.modul.request.SearchAttendRequest;
-import com.enigma.ClassNexa.modul.request.UpdateAttendRequest;
-import com.enigma.ClassNexa.modul.response.AttendResponse;
-import com.enigma.ClassNexa.modul.response.SingleAttendResponse;
+import com.enigma.ClassNexa.model.request.AttendRequest;
+import com.enigma.ClassNexa.model.request.SearchAttendRequest;
+import com.enigma.ClassNexa.model.request.UpdateAttendRequest;
+import com.enigma.ClassNexa.model.response.AttendResponse;
+import com.enigma.ClassNexa.model.response.SingleAttendResponse;
 
 import java.util.List;
 
