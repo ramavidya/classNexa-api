@@ -142,6 +142,14 @@ public class ParticipantServiceImpl implements ParticipantService {
     public Participant getByParticipantId(String participantId) {
         return participantRepository.findById(participantId).orElse(null);
     }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<Participant> getAllParticipant() {
+       return participantRepository.findAll();
+    }
+
     private static Specification<Participant> getParticipantSpecification(SearchUserRequest request) {
         Specification<Participant> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();

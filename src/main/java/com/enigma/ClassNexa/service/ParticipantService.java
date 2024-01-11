@@ -22,4 +22,5 @@ public interface ParticipantService {
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
     Participant getByParticipantId(String id);
+    List<Participant> getAllParticipant();
 }
