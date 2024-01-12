@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class ClassesController {
     private final ClassesService classesService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createNew(@RequestBody ClassesRequest request){
         ClassResponse classResponse = classesService.create(request);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
@@ -35,6 +37,7 @@ public class ClassesController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> update(@RequestBody UpdateClassesRequest request){
         ClassResponse classResponse = classesService.update(request);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
@@ -47,6 +50,7 @@ public class ClassesController {
 
 
     @DeleteMapping(path = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteById(@PathVariable String id){
         classesService.deleteById(id);
         WebResponse<String> webResponse = WebResponse.<String>builder()
@@ -58,6 +62,7 @@ public class ClassesController {
     }
 
     @GetMapping(path = "/{id}")
+    @PreAuthorize("hasRole('PARTICIPANT')")
     public ResponseEntity<?> getById(@PathVariable String id){
         ClassResponse classResponse = classesService.getById(id);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
@@ -69,6 +74,7 @@ public class ClassesController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> getAll(@RequestParam(required = false, defaultValue = "1") Integer page,
                                     @RequestParam(required = false, defaultValue = "10") Integer size,
                                     @RequestParam(required = false, defaultValue = "asc") String direction,
