@@ -3,6 +3,7 @@ package com.enigma.ClassNexa.model.response;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.List;
 public class AttendResponse {
 
     private String scheduleId;
-    private Timestamp classStartedAt;
+    private Date classStartedAt;
 
     private List<AttendDetailResponse> attendDetailResponses;
 }

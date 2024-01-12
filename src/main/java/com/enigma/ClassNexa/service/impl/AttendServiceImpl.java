@@ -52,7 +52,7 @@ public class AttendServiceImpl implements AttendService {
                 .build();
          SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .scheduleId(optionalAttend.get().getSchedule().getId())
-                .classStartedAt(optionalAttend.get().getSchedule().getStartClass())
+                .classStartedAt(optionalAttend.get().getSchedule().getStart_class())
                 .attendDetailResponse(attendDetailResponse)
                 .build();
         return attendResponse;
@@ -84,7 +84,7 @@ public class AttendServiceImpl implements AttendService {
         }
         AttendResponse attendResponse = AttendResponse.builder()
                 .scheduleId(schedule.getId())
-                .classStartedAt(schedule.getStartClass())
+                .classStartedAt(schedule.getStart_class())
                 .attendDetailResponses(attendDetailResponses)
                 .build();
         return attendResponse;
@@ -111,7 +111,7 @@ public class AttendServiceImpl implements AttendService {
                     .build();
             SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                     .scheduleId(schedule.getId())
-                    .classStartedAt(schedule.getStartClass())
+                    .classStartedAt(schedule.getStart_class())
                     .attendDetailResponse(attendDetailResponse)
                     .build();
             attendResponses.add(attendResponse);
@@ -147,7 +147,7 @@ public class AttendServiceImpl implements AttendService {
                 .build();
         SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .scheduleId(schedule.getId())
-                .classStartedAt(schedule.getStartClass())
+                .classStartedAt(schedule.getStart_class())
                 .attendDetailResponse(attendDetailResponse)
                 .build();
 
