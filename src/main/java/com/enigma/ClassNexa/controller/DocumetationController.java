@@ -45,7 +45,7 @@ public class DocumetationController {
     }
 
     @GetMapping(path = "/api/documentation")
-    @PreAuthorize("hasRole('TRAINER','ADMIN')")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getAll(){
         List<Documentation> all = documetationService.getAll();
         List<DocumentationResponse> documentationResponses = new ArrayList<>();
@@ -69,7 +69,7 @@ public class DocumetationController {
     }
 
     @GetMapping(path = "/api/documentation/{id}")
-    @PreAuthorize("hasRole('TRAINER','ADMIN')")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getById(@PathVariable String id){
         DocumentationResponse all = documetationService.getById(id);
         WebResponse<DocumentationResponse> response = WebResponse.<DocumentationResponse>builder()
