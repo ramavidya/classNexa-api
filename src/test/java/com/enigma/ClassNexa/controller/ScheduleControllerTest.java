@@ -55,12 +55,6 @@ class ScheduleControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("admin@gmail.com")
-    private String email;
-
-    @Value("password")
-    private String password;
-
     @Autowired
     private AuthService authService;
 
