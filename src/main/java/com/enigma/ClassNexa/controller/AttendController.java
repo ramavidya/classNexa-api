@@ -1,5 +1,6 @@
 package com.enigma.ClassNexa.controller;
 
+
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.model.request.AttendRequest;
 import com.enigma.ClassNexa.model.request.SearchAttendRequest;

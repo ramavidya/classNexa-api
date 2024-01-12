@@ -1,16 +1,32 @@
 package com.enigma.ClassNexa.model.request;
 
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import lombok.*;
 
 import java.util.List;
+
+
+@Builder
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class UpdateClassesRequest {
-    private String classesId;
+
+    @NotBlank
+    private String id;
+
+    @NotBlank
     private String name;
-    private List<Participant> participants;
+
+    @NotBlank
+    private String trainerId;
+
+    @NotNull
+    private List<DetailClassParticipantRequest> participants;
+
 }

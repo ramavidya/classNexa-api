@@ -2,6 +2,9 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.Attend;
 import com.enigma.ClassNexa.entity.Attendance;
+
+import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.model.request.AttendDetailRequest;
 import com.enigma.ClassNexa.model.request.AttendRequest;
 import com.enigma.ClassNexa.model.request.SearchAttendRequest;
@@ -12,6 +15,9 @@ import com.enigma.ClassNexa.model.response.SingleAttendResponse;
 import com.enigma.ClassNexa.repository.AttendRepository;
 import com.enigma.ClassNexa.service.AttendService;
 import com.enigma.ClassNexa.service.AttendanceService;
+
+import com.enigma.ClassNexa.service.ParticipantService;
+import com.enigma.ClassNexa.service.ScheduleService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +65,7 @@ public class AttendServiceImpl implements AttendService {
     public AttendResponse create(AttendRequest request) {
         List<Attend> attends = new ArrayList<>();
         List<AttendDetailResponse> attendDetailResponses = new ArrayList<>();
+
         Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
         for (AttendDetailRequest attendDetailRequest : request.getAttendDetailRequests()) {
             Participant participant = participantService.getByParticipantId(attendDetailRequest.getParticipantId());
@@ -146,7 +153,6 @@ public class AttendServiceImpl implements AttendService {
                 .classStartedAt(schedule.getStart_class())
                 .attendDetailResponse(attendDetailResponse)
                 .build();
-
          attendRepository.save(attend);
          return attendResponse;
     }

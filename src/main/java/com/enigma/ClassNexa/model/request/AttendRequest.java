@@ -1,5 +1,6 @@
 package com.enigma.ClassNexa.model.request;
 
+import com.enigma.ClassNexa.entity.Participant;
 import lombok.*;
 
 import java.util.List;
@@ -12,4 +13,6 @@ import java.util.List;
 public class AttendRequest {
     private String scheduleId;
     private List<AttendDetailRequest> attendDetailRequests;
+
+
 }
