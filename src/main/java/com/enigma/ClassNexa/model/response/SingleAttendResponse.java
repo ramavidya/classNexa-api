@@ -10,7 +10,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class SingleAttendResponse {
-    private String id;
     private String scheduleId;
     private Date classStartedAt;
     private AttendDetailResponse attendDetailResponse;
