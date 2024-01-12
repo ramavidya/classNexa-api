@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +47,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
         Classes byIdClass = classCNService.getId(request.getClasses_id());
+
+        if (request.getStart_class().equals(request.getEnd_class())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time is same");
         Schedule schedule = Schedule.builder()
                 .meeting_link(request.getMeeting_link())
                 .start_class(request.getStart_class())
@@ -57,7 +57,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .build();
         Schedule save = scheduleRepository.save(schedule);
 
-        log.info(save.getClasses_id().getId());
         List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(save.getClasses_id().getId());
 
         for (int i=0;i<byClassId.size();i++){
@@ -65,7 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
 
             String subject = "Selamat Datang di ClassNexa";
-            String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp"+byParticipantId.getName()+
+            String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp "+byParticipantId.getName()+
                     "! Dengan antusiasme, kami ingin mengucapkan selamat datang kepada Anda dan berharap bahwa pengalaman yang Anda dapatkan di sini akan menjadi perjalanan yang luar biasa.\n" +
                     "\n" +
                     "Di bootcamp ini, Anda akan memiliki kesempatan untuk belajar, berkolaborasi, dan berkembang bersama para profesional terbaik dalam industri ini. Kami percaya bahwa Anda memiliki potensi besar dan kami sangat bersemangat untuk melihat kontribusi luar biasa yang akan Anda berikan.\n" +
@@ -76,6 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     "\n" +
                     "Salam hangat, Tim ClassNexa";
             sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
+            log.info("message send : "+i);
         }
         return toScheduleResponse(save);
 
@@ -117,17 +117,32 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Optional<Schedule> byIdSchedule = scheduleRepository.findById(request.getId());
         Classes byIdClass = classCNService.getId(request.getClasses_id());
-        Schedule schedule = Schedule.builder()
-                .id(byIdSchedule.get().getId())
-                .meeting_link(request.getMeeting_link())
-                .start_class(request.getStart_class())
-                .end_class(request.getEnd_class())
-                .classes_id(byIdClass)
-                .build();
 
-        Schedule save = scheduleRepository.save(schedule);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(byIdSchedule.get().getStart_class());
 
-        return toScheduleResponse(save);
+        calendar.add(Calendar.MINUTE, -30);
+
+        Date newDate = calendar.getTime();
+        Date date1 = new Date();
+
+        if (date1.toInstant().isBefore(newDate.toInstant())){
+            Schedule schedule = Schedule.builder()
+                    .id(byIdSchedule.get().getId())
+                    .meeting_link(request.getMeeting_link())
+                    .start_class(request.getStart_class())
+                    .end_class(request.getEnd_class())
+                    .classes_id(byIdClass)
+                    .build();
+
+            Schedule save = scheduleRepository.save(schedule);
+
+            return toScheduleResponse(save);
+        } else if (newDate.equals(date1.toInstant())) {
+            return null;
+        }else {
+            return null;
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.enigma.ClassNexa.model.response.PagingResponse;
 import com.enigma.ClassNexa.model.response.TrainerNotesResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.TrainerNotesService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
