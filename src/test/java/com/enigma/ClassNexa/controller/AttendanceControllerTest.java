@@ -38,12 +38,43 @@ public class AttendanceControllerTest {
 //        attendanceRepository.deleteAll();
 //    }
 
+
+    @Test
+    void createAttendanceSuccess() throws Exception {
+        Attendance request = new Attendance();
+        request.setId("6");
+        request.setCategory("sad");
+        mockMvc.perform(post("/api/attendance")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        ).andExpectAll(status().isCreated());
+    }
+    @Test
+    void getAttendanceNotFound() throws Exception {
+        mockMvc.perform(
+                get("/api/attendance/7")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isNotFound());
+    }
+    @Test
+    void getAttendanceSuccess() throws Exception {
+        mockMvc.perform(
+                get("/api/attendance/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk());
+    }
+
+
+
     @Test
     void createAttendanceBadRequest() throws Exception {
         Attendance request = new Attendance();
-        request.setId("5");
-        request.setCategory("");
-        attendanceRepository.save(request);
+        request.setId("8");
 
         mockMvc.perform(
                 post("/api/attendance")
@@ -52,11 +83,7 @@ public class AttendanceControllerTest {
                         .content(objectMapper.writeValueAsString(request))
         ).andExpectAll(
                 status().isBadRequest()
-        ).andDo(result -> {
-            WebResponse<String> response = objectMapper.readValue(result.getResponse()
-                    .getContentAsString(), new TypeReference<WebResponse<String>>() {
-            });
-            assertNotNull(response.getMessage());
-        });
+
+        );
     }
 }

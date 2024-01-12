@@ -38,11 +38,11 @@ public class AttendanceController {
     public ResponseEntity<?> createAttendance(@RequestBody Attendance request){
         Attendance attendance = attendanceService.create(request);
         WebResponse<Attendance> response = WebResponse.<Attendance>builder()
-                .status(HttpStatus.OK.getReasonPhrase())
+                .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("success")
                 .data(attendance)
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @DeleteMapping(path = "/api/attendance/{id}")
     public ResponseEntity<?> deleteById(@PathVariable String id){

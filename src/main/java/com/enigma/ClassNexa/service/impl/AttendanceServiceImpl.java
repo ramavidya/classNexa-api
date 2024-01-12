@@ -5,8 +5,10 @@ import com.enigma.ClassNexa.repository.AttendanceRepository;
 import com.enigma.ClassNexa.service.AttendanceService;
 import com.enigma.ClassNexa.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +21,16 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Attendance getAttendanceById(String id) {
-         return attendanceRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+         return attendanceRepository.findById(id)
+                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "not found"));
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Attendance create(Attendance request) {
         validationUtils.validate(request);
+        if (request.getCategory() == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "cannot fill in blank");
         Attendance attendance = Attendance.builder()
+                .id(request.getId())
                 .category(request.getCategory())
                 .build();
         return attendanceRepository.save(attendance);
