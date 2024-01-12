@@ -48,23 +48,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponse create(ScheduleRequest request) {
         Classes byIdClass = classCNService.getId(request.getClasses_id());
 
-        Calendar calendarstart = Calendar.getInstance();
-        calendarstart.setTime(request.getStart_class());
-        calendarstart.add(Calendar.HOUR, -7);
-
-        Calendar calendarend = Calendar.getInstance();
-        calendarend.setTime(request.getEnd_class());
-        calendarend.add(Calendar.HOUR, -7);
-
+        if (request.getStart_class().equals(request.getEnd_class())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time is same");
         Schedule schedule = Schedule.builder()
                 .meeting_link(request.getMeeting_link())
-                .start_class(calendarstart.getTime())
+                .start_class(request.getStart_class())
                 .end_class(request.getEnd_class())
                 .classes_id(byIdClass)
                 .build();
         Schedule save = scheduleRepository.save(schedule);
 
-        log.info(save.getClasses_id().getId());
         List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(save.getClasses_id().getId());
 
         for (int i=0;i<byClassId.size();i++){
@@ -72,7 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
 
             String subject = "Selamat Datang di ClassNexa";
-            String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp"+byParticipantId.getName()+
+            String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp "+byParticipantId.getName()+
                     "! Dengan antusiasme, kami ingin mengucapkan selamat datang kepada Anda dan berharap bahwa pengalaman yang Anda dapatkan di sini akan menjadi perjalanan yang luar biasa.\n" +
                     "\n" +
                     "Di bootcamp ini, Anda akan memiliki kesempatan untuk belajar, berkolaborasi, dan berkembang bersama para profesional terbaik dalam industri ini. Kami percaya bahwa Anda memiliki potensi besar dan kami sangat bersemangat untuk melihat kontribusi luar biasa yang akan Anda berikan.\n" +
@@ -83,6 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     "\n" +
                     "Salam hangat, Tim ClassNexa";
             sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
+            log.info("message send : "+i);
         }
         return toScheduleResponse(save);
 
