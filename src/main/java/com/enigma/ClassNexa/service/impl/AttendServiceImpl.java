@@ -45,12 +45,12 @@ public class AttendServiceImpl implements AttendService {
         Optional<Attend> optionalAttend = attendRepository.findById(id);
         optionalAttend.orElseThrow(() -> new RuntimeException("not found"));
         AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
+                .id(optionalAttend.get().getId())
                 .ParticipantId(optionalAttend.get().getParticipant().getId())
                 .participantName(optionalAttend.get().getParticipant().getName())
                 .info(optionalAttend.get().getAttendance().getCategory())
                 .build();
          SingleAttendResponse attendResponse = SingleAttendResponse.builder()
-                .id(optionalAttend.get().getId())
                 .scheduleId(optionalAttend.get().getSchedule().getId())
                 .classStartedAt(optionalAttend.get().getSchedule().getStart_class())
                 .attendDetailResponse(attendDetailResponse)
@@ -67,20 +67,23 @@ public class AttendServiceImpl implements AttendService {
         for (AttendDetailRequest attendDetailRequest : request.getAttendDetailRequests()) {
             Participant participantRama = participantService.getByParticipantId(attendDetailRequest.getParticipantId());
             Attendance attendance = attendanceService.getAttendanceById(attendDetailRequest.getCategoryId());
-            AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
-                    .ParticipantId(participantRama.getId())
-                    .participantName(participantRama.getName())
-                    .info(attendance.getCategory())
-                    .build();
             Attend attend = Attend.builder()
                     .participant(participantRama)
                     .attendance(attendance)
                     .schedule(scheduleRama)
                     .build();
+            attendRepository.save(attend);
+
+            AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
+                    .id(attend.getId())
+                    .ParticipantId(participantRama.getId())
+                    .participantName(participantRama.getName())
+                    .info(attendance.getCategory())
+                    .build();
 
             attendDetailResponses.add(attendDetailResponse);
             attends.add(attend);
-            attendRepository.save(attend);
+
         }
         AttendResponse attendResponse = AttendResponse.builder()
                 .scheduleId(scheduleRama.getId())
@@ -104,12 +107,12 @@ public class AttendServiceImpl implements AttendService {
             Attendance attendance = attendanceService.getAttendanceById(all.getContent().get(i).getAttendance().getId());
             Schedule scheduleRama = scheduleService.getByIdSchedule(all.getContent().get(i).getSchedule().getId());
             AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
+                    .id(all.getContent().get(i).getId())
                     .ParticipantId(participantRama.getId())
                     .participantName(participantRama.getName())
                     .info(attendance.getCategory())
                     .build();
             SingleAttendResponse attendResponse = SingleAttendResponse.builder()
-                    .id(all.getContent().get(i).getId())
                     .scheduleId(scheduleRama.getId())
                     .classStartedAt(scheduleRama.getStart_class())
                     .attendDetailResponse(attendDetailResponse)
@@ -134,12 +137,12 @@ public class AttendServiceImpl implements AttendService {
         Attendance attendance = attendanceService.getAttendanceById(request.getCategoryId());
         Attend attend = optionalAttend.get();
         AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
+                .id(attend.getId())
                 .ParticipantId(participantRamaById.getId())
                 .participantName(attend.getParticipant().getName())
                 .info(attendance.getCategory())
                 .build();
         SingleAttendResponse attendResponse = SingleAttendResponse.builder()
-                .id(optionalAttend.get().getId())
                 .scheduleId(scheduleRama.getId())
                 .classStartedAt(scheduleRama.getStart_class())
                 .attendDetailResponse(attendDetailResponse)
