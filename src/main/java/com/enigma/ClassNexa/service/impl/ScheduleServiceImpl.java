@@ -26,8 +26,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ClassesService classCNService;
     private final TrainerService trainerService;
-    private final JavaMailSender javaMailSender;
-    private final ClassDetailService classDetailService;
+    private final SendEmailService sendEmailService;
     private final ParticipantService participantService;
     private final UserService userService;
     private final DetailClassParticipantRepository detailClassParticipantRepository;
@@ -44,16 +43,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .classes_name(byIdClass.getName())
                 .trainer(byIdTrainer.getName())
                 .build();
-    }
-
-    public void sendEmail(String to, String message) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("priyqmbido@gmail.com");
-        simpleMailMessage.setTo(to);
-        simpleMailMessage.setSubject("Selamat Datang di ClassNexa");
-        simpleMailMessage.setText(message);
-
-        javaMailSender.send(simpleMailMessage);
     }
 
     @Override
@@ -75,6 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
             UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
 
+            String subject = "Selamat Datang di ClassNexa";
             String message = "Kami sangat senang bisa menyambut Anda sebagai bagian dari Bootcamp"+byParticipantId.getName()+
                     "! Dengan antusiasme, kami ingin mengucapkan selamat datang kepada Anda dan berharap bahwa pengalaman yang Anda dapatkan di sini akan menjadi perjalanan yang luar biasa.\n" +
                     "\n" +
@@ -85,7 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     "Tetap semangat, jadilah diri Anda sendiri, dan nikmati perjalanan ini. Kami yakin Anda akan menghasilkan karya-karya luar biasa.\n" +
                     "\n" +
                     "Salam hangat, Tim ClassNexa";
-            sendEmail(userCredential.getEmail(), message);
+            sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
         }
         return toScheduleResponse(save);
 
