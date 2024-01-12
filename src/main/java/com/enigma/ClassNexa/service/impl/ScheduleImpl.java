@@ -17,10 +17,10 @@ public class ScheduleImpl implements ScheduleService {
         Optional<Schedule> byId = scheduleRepositoryRama.findById(id);
         Schedule schedule = Schedule.builder()
                 .id(byId.get().getId())
-                .meetingLink(byId.get().getMeetingLink())
-                .startClass(byId.get().getStartClass())
-                .endClass(byId.get().getEndClass())
-                .Classes(byId.get().getClasses())
+                .meeting_link(byId.get().getMeeting_link())
+                .start_class(byId.get().getStart_class())
+                .end_class(byId.get().getEnd_class())
+//                .classes(byId.get().getClasses())
                 .build();
         return schedule;
 

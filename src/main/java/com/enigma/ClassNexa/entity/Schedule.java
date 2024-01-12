@@ -1,9 +1,11 @@
 package com.enigma.ClassNexa.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 @Setter
@@ -17,17 +19,17 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    private String meeting_link;
 
-    @Column(name = "meeting_link")
-    private String meetingLink;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date start_class;
 
-    @Column(name = "start_class")
-    private Timestamp startClass;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date end_class;
 
-    @Column(name = "end_class")
-    private Timestamp endClass;
+//    @ManyToOne
+//    @JoinColumn(name = "classes_id")
+//    private Classes classes_id;
 
-    @ManyToOne
-    @JoinColumn(name = "classes_id", referencedColumnName = "id")
-    private Classes Classes;
 }
+

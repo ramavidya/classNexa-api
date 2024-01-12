@@ -25,6 +25,6 @@ public class Participant {
 
     private String gender;
 
-    @OneToOne
-    private UserCredential userCredential;
+//    @OneToOne
+//    private UserCredential userCredential;
 }
