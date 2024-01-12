@@ -55,12 +55,11 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TrainerNotesResponse create(TrainerNotesRequest request) {
-        Trainer byIdTrainer = trainerService.getByTrainerId(request.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(request.getSchedule());
 
         UserCredential userCredential = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        log.info(userCredential.getId());
+        Trainer byUserCredential = trainerService.getByUserCredential(userCredential);
+        log.info(byUserCredential.getName());
 
 //        String string = jwtAuthenticationFilter.parseJTW(servletRequest);
 //        JwtClaim userInfoByToken = jwtUtil.getUserInfoByToken();
@@ -68,7 +67,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
 
         TrainerNotes trainerNotes =TrainerNotes.builder()
                 .notes(request.getNotes())
-                .trainer(byIdTrainer)
+                .trainer(byUserCredential)
                 .schedule(byIdSchedule)
                 .build();
         TrainerNotes save = trainerNotesRepository.save(trainerNotes);
