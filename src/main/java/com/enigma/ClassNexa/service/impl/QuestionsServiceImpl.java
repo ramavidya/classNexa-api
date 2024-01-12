@@ -3,28 +3,24 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.entity.*;
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import com.enigma.ClassNexa.model.request.UpdateStatusRequest;
 import com.enigma.ClassNexa.model.response.ParticipantQuestionsResponse;
-import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import com.enigma.ClassNexa.model.response.QuestionsResponse;
-import com.enigma.ClassNexa.repository.ParticipantRepository;
+import com.enigma.ClassNexa.repository.DetailClassParticipantRepository;
 import com.enigma.ClassNexa.repository.QuestionsRepository;
-import com.enigma.ClassNexa.repository.ScheduleRepository;
-import com.enigma.ClassNexa.service.ParticipantService;
-import com.enigma.ClassNexa.service.QuestionsService;
-import com.enigma.ClassNexa.service.QuestionsStatusService;
-import com.enigma.ClassNexa.service.ScheduleService;
+import com.enigma.ClassNexa.service.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,21 +33,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class QuestionsServiceImpl implements QuestionsService {
 
         private final QuestionsRepository questionsRepository;
-
-        private final ParticipantRepository participantRepository;
-
-        private final ScheduleRepository scheduleRepository;
-
 
         private final ParticipantService participantService;
 
         private final ScheduleService scheduleService;
 
-        private final QuestionsStatusService questions_status_service;
+
+        private final DetailClassParticipantRepository detailClassParticipantRepository;
+
+        private final UserService userService;
+
+        private final SendEmailService sendEmailService;
 
         @Override
         @Transactional(readOnly = true)
@@ -64,25 +59,35 @@ public class QuestionsServiceImpl implements QuestionsService {
         @Transactional(rollbackFor = Exception.class)
         public QuestionsResponse create(QuestionsRequest request) {
 
-                Participant participant = participantService.getByParticipantId(request.getParticipantId());
-
                 Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
 
-                Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
+                UserCredential principal =(UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                Participant participant1 = participantService.getByUserCredential(principal);
 
 
                 Questions questions = Questions.builder()
                         .question(request.getQuestion())
                         .course(request.getCourse())
                         .chapter(request.getChapter())
-                        .questionsStatus(questions_status)
-                        .participant(participant)
+                        .status(request.isStatus())
+                        .participant(participant1)
                         .schedule(schedule)
                         .build();
 
 
 
                 questionsRepository.saveAndFlush(questions);
+
+
+                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(questions.getParticipant().getId());
+                for (int i=0;i<byClassId.size();i++){
+                        Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
+                        UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
+
+                        String subject = "Selamat Datang di ClassNexa";
+                        String message = "Pertanyaan anda sudah kami terima"+ byParticipantId.getName();
+                        sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
+                }
 
 
                 return toParticipantQuestionsResponse(questions);
@@ -104,15 +109,28 @@ public class QuestionsServiceImpl implements QuestionsService {
                 Optional<Questions> optionalQuestions = questionsRepository.findById(request.getQuestionsId());
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
 
-
                 Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
 
-                Questions_Status questions_status = questions_status_service.getById(request.getStatusId());
 
                 Questions updateQuestion = optionalQuestions.get();
-                updateQuestion.setQuestionsStatus(questions_status);
+                updateQuestion.setStatus(request.isStatus() == false);
 
-                return toParticipantQuestionsResponse(questionsRepository.save(updateQuestion));
+                Questions questions = questionsRepository.save(updateQuestion);
+
+
+//                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(questions.getParticipant().getId());
+//                for (int i=0;i<byClassId.size();i++){
+//                        Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
+//                        UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
+//
+//                        String subject = "Selamat Datang di ClassNexa";
+//                        String message = "Pertanyaan anda sudah terjawab"+ byParticipantId.getName();
+//                        sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
+//                }
+
+
+
+                return toParticipantQuestionsResponse(questions);
 
         }
 
@@ -147,10 +165,8 @@ public class QuestionsServiceImpl implements QuestionsService {
         }
 
         private QuestionsResponse toParticipantQuestionsResponse(Questions questions) {
-                Optional<Participant> optionalParticipant = participantRepository.findById(questions.getParticipant().getId());
-                if (optionalParticipant.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Participant not found for the question");
-                }
+
+                Participant participant = participantService.getByParticipantId(questions.getParticipant().getId());
 
                 Schedule schedule = scheduleService.getByIdSchedule(questions.getSchedule().getId());
 
@@ -158,10 +174,10 @@ public class QuestionsServiceImpl implements QuestionsService {
                 List<ParticipantQuestionsResponse> questionsResponses = new ArrayList<>();
 
 
-                for (Questions questionsParticipant : optionalParticipant.get().getQuestions()){
+                for (Questions questionsParticipant : participant.getQuestions()){
 
                         String status;
-                        if (questionsParticipant.getQuestionsStatus().isStatus() == true){
+                        if (questionsParticipant.isStatus() == true){
                                 status = "The question has been answered";
                         }else {
                                 status = "Unanswered question";
@@ -234,12 +250,30 @@ public class QuestionsServiceImpl implements QuestionsService {
 
                         }
 
-                        Join<Questions, Questions_Status> statusJoin = root.join("questionsStatus", JoinType.INNER);
-                        if (request.isStatus()) {
-                                Predicate statusPredicate = criteriaBuilder.isTrue(statusJoin.get("status"));
-                                predicates.add(statusPredicate);
+
+                        if (request.isStatus()){
+                                Predicate namePredicate = criteriaBuilder.isTrue(
+                                        root.get("status")
+                                );
+                                predicates.add(namePredicate);
                         }
 
+
+
+
+//                        else if (request.isStatus()) {
+//                                Predicate namePredicate = criteriaBuilder.isTrue(
+//                                        root.get("status")
+//                                );
+//                                predicates.add(namePredicate);
+//                        }
+
+//                        else {
+//                                Predicate namePredicate = criteriaBuilder.isTrue(
+//                                        root.get("status")
+//                                );
+//                                predicates.add(namePredicate);
+//                        }
 
 
 

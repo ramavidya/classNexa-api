@@ -4,7 +4,9 @@ package com.enigma.ClassNexa.controller;
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
 import com.enigma.ClassNexa.model.request.SearchQuestionsRequest;
 import com.enigma.ClassNexa.model.request.UpdateStatusRequest;
-import com.enigma.ClassNexa.model.response.*;
+import com.enigma.ClassNexa.model.response.PagingResponse;
+import com.enigma.ClassNexa.model.response.QuestionsResponse;
+import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.QuestionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,9 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +48,8 @@ public class QuestionsController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(webResponse);
     }
-//    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasAnyRole('ADMIN','TRAINER')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UpdateStatusRequest request){
         QuestionsResponse update = questionsService.update(request);
@@ -62,6 +62,7 @@ public class QuestionsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','TRAINER')")
     @GetMapping
     public ResponseEntity<?> getAllQuestions(
             @RequestParam(defaultValue = "1") Integer page,
@@ -103,7 +104,7 @@ public class QuestionsController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','TRAINER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteQuestionsById(@PathVariable String id) {
         questionsService.deleteById(id);
