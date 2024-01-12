@@ -45,6 +45,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteAttendance(String id) {
+        if (attendanceRepository.findById(id).isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "not found");
         attendanceRepository.deleteById(id);
     }
 
