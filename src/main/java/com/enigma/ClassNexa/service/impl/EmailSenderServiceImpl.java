@@ -2,6 +2,7 @@ package com.enigma.ClassNexa.service.impl;
 
 import com.enigma.ClassNexa.service.EmailSenderService;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

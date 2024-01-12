@@ -10,5 +10,5 @@ import lombok.*;
 public class UpdateStatusRequest {
     private String questionsId;
     private String scheduleId;
-    private String statusId;
+    private boolean status;
 }

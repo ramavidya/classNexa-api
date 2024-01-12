@@ -13,8 +13,7 @@ public class QuestionsRequest {
     private String question;
     private String course;
     private String chapter;
-    private String statusId;
-    private String participantId;
+    private boolean status;
     private String scheduleId;
 
 }
