@@ -6,6 +6,7 @@ import com.enigma.ClassNexa.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @GetMapping(path = "/api/attendance/{id}")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getById(@PathVariable String id){
         Attendance attendanceById = attendanceService.getAttendanceById(id);
         WebResponse<Attendance> response = WebResponse.<Attendance>builder()
@@ -26,6 +28,7 @@ public class AttendanceController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @GetMapping(path = "/api/attendance")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> getAll(){
         WebResponse<List<Attendance>> response = WebResponse.<List<Attendance>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
@@ -35,6 +38,7 @@ public class AttendanceController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @PostMapping(path = "/api/attendance")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> createAttendance(@RequestBody Attendance request){
         Attendance attendance = attendanceService.create(request);
         WebResponse<Attendance> response = WebResponse.<Attendance>builder()
@@ -45,6 +49,7 @@ public class AttendanceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @DeleteMapping(path = "/api/attendance/{id}")
+    @PreAuthorize("hasAnyRole('TRAINER','ADMIN')")
     public ResponseEntity<?> deleteById(@PathVariable String id){
         attendanceService.deleteAttendance(id);
         WebResponse<String> response = WebResponse.<String>builder()

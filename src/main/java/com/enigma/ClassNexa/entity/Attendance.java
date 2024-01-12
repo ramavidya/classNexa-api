@@ -16,4 +16,5 @@ public class Attendance {
     private String id;
 
     private String category;
+
 }

@@ -9,9 +9,7 @@ import com.enigma.ClassNexa.model.request.AttendDetailRequest;
 import com.enigma.ClassNexa.model.request.AttendRequest;
 import com.enigma.ClassNexa.model.request.SearchAttendRequest;
 import com.enigma.ClassNexa.model.request.UpdateAttendRequest;
-import com.enigma.ClassNexa.model.response.AttendDetailResponse;
-import com.enigma.ClassNexa.model.response.AttendResponse;
-import com.enigma.ClassNexa.model.response.SingleAttendResponse;
+import com.enigma.ClassNexa.model.response.*;
 import com.enigma.ClassNexa.repository.AttendRepository;
 import com.enigma.ClassNexa.service.AttendService;
 import com.enigma.ClassNexa.service.AttendanceService;
@@ -25,8 +23,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +45,13 @@ public class AttendServiceImpl implements AttendService {
     @Transactional(rollbackFor = Exception.class)
     public SingleAttendResponse getAttendById(String id) {
         Optional<Attend> optionalAttend = attendRepository.findById(id);
-        optionalAttend.orElseThrow(() -> new RuntimeException("not found"));
+        optionalAttend.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "not found"));
         AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
                 .id(optionalAttend.get().getId())
                 .ParticipantId(optionalAttend.get().getParticipant().getId())
                 .participantName(optionalAttend.get().getParticipant().getName())
                 .info(optionalAttend.get().getAttendance().getCategory())
+                .absentReasons(optionalAttend.get().getAbsentReasons())
                 .build();
          SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .scheduleId(optionalAttend.get().getSchedule().getId())
@@ -65,7 +66,6 @@ public class AttendServiceImpl implements AttendService {
     public AttendResponse create(AttendRequest request) {
         List<Attend> attends = new ArrayList<>();
         List<AttendDetailResponse> attendDetailResponses = new ArrayList<>();
-
         Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
         for (AttendDetailRequest attendDetailRequest : request.getAttendDetailRequests()) {
             Participant participant = participantService.getByParticipantId(attendDetailRequest.getParticipantId());
@@ -74,6 +74,7 @@ public class AttendServiceImpl implements AttendService {
                     .participant(participant)
                     .attendance(attendance)
                     .schedule(schedule)
+                    .absentReasons(attendDetailRequest.getAbsentReasons())
                     .build();
             attendRepository.saveAndFlush(attend);
             AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
@@ -81,6 +82,7 @@ public class AttendServiceImpl implements AttendService {
                     .ParticipantId(participant.getId())
                     .participantName(participant.getName())
                     .info(attendance.getCategory())
+                    .absentReasons(attend.getAbsentReasons())
                     .build();
             attendDetailResponses.add(attendDetailResponse);
             attends.add(attend);
@@ -111,6 +113,7 @@ public class AttendServiceImpl implements AttendService {
                     .ParticipantId(participant.getId())
                     .participantName(participant.getName())
                     .info(attendance.getCategory())
+                    .absentReasons(all.getContent().get(i).getAbsentReasons())
                     .build();
             SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                     .scheduleId(schedule.getId())
@@ -124,6 +127,7 @@ public class AttendServiceImpl implements AttendService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(String id) {
+        if (attendRepository.findById(id).isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "not found");
         attendRepository.deleteById(id);
     }
 
@@ -131,7 +135,7 @@ public class AttendServiceImpl implements AttendService {
     @Transactional(rollbackFor = Exception.class)
     public SingleAttendResponse Update(UpdateAttendRequest request) {
         Optional<Attend> optionalAttend = attendRepository.findById(request.getId());
-        if (optionalAttend.isEmpty()) throw new RuntimeException("not found");
+        if (optionalAttend.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "not found");
         Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
         Participant participantById = participantService.getByParticipantId(request.getParticipantId());
         Attendance attendance = attendanceService.getAttendanceById(request.getCategoryId());
@@ -141,12 +145,14 @@ public class AttendServiceImpl implements AttendService {
                 .schedule(schedule)
                 .participant(participantById)
                 .attendance(attendance)
+                .absentReasons(request.getAbsentReasons())
                 .build();
         AttendDetailResponse attendDetailResponse = AttendDetailResponse.builder()
                 .id(attend.getId())
                 .ParticipantId(participantById.getId())
                 .participantName(attend.getParticipant().getName())
                 .info(attendance.getCategory())
+                .absentReasons(attend.getAbsentReasons())
                 .build();
         SingleAttendResponse attendResponse = SingleAttendResponse.builder()
                 .scheduleId(schedule.getId())

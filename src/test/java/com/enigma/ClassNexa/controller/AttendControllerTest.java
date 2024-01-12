@@ -1,8 +1,14 @@
 package com.enigma.ClassNexa.controller;
 
-import com.enigma.ClassNexa.entity.Attendance;
+
+import com.enigma.ClassNexa.constan.ERole;
+import com.enigma.ClassNexa.entity.*;
+import com.enigma.ClassNexa.model.request.AttendDetailRequest;
+import com.enigma.ClassNexa.model.request.AttendRequest;
 import com.enigma.ClassNexa.model.request.LoginRequest;
+import com.enigma.ClassNexa.repository.AttendRepository;
 import com.enigma.ClassNexa.repository.AttendanceRepository;
+import com.enigma.ClassNexa.repository.ParticipantRepository;
 import com.enigma.ClassNexa.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,27 +18,29 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.MockMvcBuilder.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AttendanceControllerTest {
-
+public class AttendControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private AttendanceRepository attendanceRepository;
-
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private AuthService authService;
-
+    @Autowired
+    private AttendRepository attendRepository;
+    @Autowired
+    private ParticipantRepository participantRepository;
+    @Autowired
+    private AttendanceRepository attendanceRepository;
     @Value("${app.class-nexa.email}")
     private String email;
 
@@ -40,31 +48,39 @@ public class AttendanceControllerTest {
     private String password;
 
     @Test
-    void createAttendanceSuccess() throws Exception {
+    void createAttendSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
         String token = authService.login(loginRequest);
-        Attendance request = new Attendance();
-        request.setId("6");
-        request.setCategory("sad");
-        mockMvc.perform(post("/api/attendance")
+        List<AttendDetailRequest> attendDetailRequests = new ArrayList<>();
+
+        AttendDetailRequest attendDetailRequest = new AttendDetailRequest();
+        attendDetailRequest.setCategoryId("1");
+        attendDetailRequest.setParticipantId("6");
+        attendDetailRequests.add(attendDetailRequest);
+
+        AttendRequest attendRequest = new AttendRequest();
+        attendRequest.setScheduleId("1");
+        attendRequest.setAttendDetailRequests(attendDetailRequests);
+
+        mockMvc.perform(post("/api/attend")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content(objectMapper.writeValueAsString(attendRequest))
                 .header("Authorization", token)
         ).andExpectAll(status().isCreated());
     }
     @Test
-    void getAttendanceNotFound() throws Exception {
+    void getAttendNotFound() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
         String token = authService.login(loginRequest);
         mockMvc.perform(
-                get("/api/attendance/7")
+                get("/api/attend/7")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
@@ -72,38 +88,33 @@ public class AttendanceControllerTest {
                 status().isNotFound());
     }
     @Test
-    void getAttendanceSuccess() throws Exception {
+    void getAttend() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
         String token = authService.login(loginRequest);
         mockMvc.perform(
-                get("/api/attendance/1")
+                get("/api/attend?participantId=2")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
         ).andExpectAll(
                 status().isOk());
     }
-
-
-
     @Test
-    void createAttendanceBadRequest() throws Exception {
+    void createAttendBadRequest() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
         String token = authService.login(loginRequest);
-        Attendance request = new Attendance();
-        request.setId("8");
+
 
         mockMvc.perform(
-                post("/api/attendance")
+                post("/api/attend")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", token)
 
         ).andExpectAll(
@@ -112,24 +123,31 @@ public class AttendanceControllerTest {
         );
     }
     @Test
-    void createAttendanceForbidden() throws Exception {
+    void createAttendForbidden() throws Exception {
 
-        Attendance request = new Attendance();
-        request.setId("8");
+        List<AttendDetailRequest> attendDetailRequests = new ArrayList<>();
+
+        AttendDetailRequest attendDetailRequest = new AttendDetailRequest();
+        attendDetailRequest.setCategoryId("1");
+        attendDetailRequest.setParticipantId("6");
+        attendDetailRequests.add(attendDetailRequest);
+
+        AttendRequest attendRequest = new AttendRequest();
+        attendRequest.setScheduleId("1");
+        attendRequest.setAttendDetailRequests(attendDetailRequests);
 
         mockMvc.perform(
                 post("/api/attendance")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
+                        .content(objectMapper.writeValueAsString(attendRequest))
 
         ).andExpectAll(
                 status().isForbidden()
-
         );
     }
     @Test
-    void deleteAttendanceNotFound() throws Exception {
+    void deleteAttendNotFound() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
@@ -139,7 +157,7 @@ public class AttendanceControllerTest {
 
 
         mockMvc.perform(
-                delete("/api/attendance/")
+                delete("/api/attend/")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
@@ -150,26 +168,33 @@ public class AttendanceControllerTest {
         );
     }
     @Test
-    void deleteAttendanceSuccess() throws Exception {
+    void deleteAttendSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();
         String token = authService.login(loginRequest);
-        Attendance request = new Attendance();
-        request.setId("9");
-        request.setCategory("happy");
-        attendanceRepository.save(request);
+
+
+        Optional<Attendance> optionalAttendance = attendanceRepository.findById("4");
+        Optional<Participant> optionalParticipant = participantRepository.findById("3");
+
+        Attend attend = new Attend();
+        attend.setAttendance(optionalAttendance.get());
+        attend.setParticipant(optionalParticipant.get());
+        attend.setAbsentReasons("diare");
+        attendRepository.save(attend);
+        String id = attend.getId();
+
 
         mockMvc.perform(
-                delete("/api/attendance/9")
+                delete("/api/attend/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
 
         ).andExpectAll(
                 status().isOk()
-
         );
     }
 }
