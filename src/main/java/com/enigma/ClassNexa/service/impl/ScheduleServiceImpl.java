@@ -24,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ClassesServiceBambang classCNService;
+    private final ClassesService classCNService;
     private final TrainerService trainerService;
     private final JavaMailSender javaMailSender;
     private final ClassDetailService classDetailService;
@@ -33,7 +33,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final DetailClassParticipantRepository detailClassParticipantRepository;
 
     private ScheduleResponse toScheduleResponse(Schedule schedule){
-        Classes byIdClass = classCNService.getById(schedule.getClasses_id().getId());
+        Classes byIdClass = classCNService.getId(schedule.getClasses_id().getId());
         Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
         return ScheduleResponse.builder()
                 .id(schedule.getId())
@@ -59,7 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
-        Classes byIdClass = classCNService.getById(request.getClasses_id());
+        Classes byIdClass = classCNService.getId(request.getClasses_id());
         Schedule schedule = Schedule.builder()
                 .meeting_link(request.getMeeting_link())
                 .start_class(request.getStart_class())
@@ -97,7 +97,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Schedule> all = scheduleRepository.findAll();
         List<ScheduleResponse> scheduleResponses = new ArrayList<>();
         for (int i = 0; i<all.size();i++){
-            Classes byIdClass = classCNService.getById(all.get(i).getClasses_id().getId());
+            Classes byIdClass = classCNService.getId(all.get(i).getClasses_id().getId());
             Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
             ScheduleResponse scheduleResponse =ScheduleResponse.builder()
                     .id(all.get(i).getId())
@@ -126,7 +126,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponse update(ScheduleRequest request) {
 
         Optional<Schedule> byIdSchedule = scheduleRepository.findById(request.getId());
-        Classes byIdClass = classCNService.getById(request.getClasses_id());
+        Classes byIdClass = classCNService.getId(request.getClasses_id());
         Schedule schedule = Schedule.builder()
                 .id(byIdSchedule.get().getId())
                 .meeting_link(request.getMeeting_link())
@@ -146,7 +146,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (id.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ID schedule not found");
 
         Optional<Schedule> byId = scheduleRepository.findById(id);
-        Classes byIdClass = classCNService.getById(byId.get().getClasses_id().getId());
+        Classes byIdClass = classCNService.getId(byId.get().getClasses_id().getId());
         Trainer byIdTrainer = trainerService.getByTrainerId(byIdClass.getTrainer().getId());
         ScheduleResponse scheduleResponse =ScheduleResponse.builder()
                 .id(byId.get().getId())

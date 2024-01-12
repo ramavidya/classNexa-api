@@ -8,7 +8,7 @@ import com.enigma.ClassNexa.model.request.SearchTrainerNotesRequest;
 import com.enigma.ClassNexa.model.request.TrainerNotesRequest;
 import com.enigma.ClassNexa.model.response.TrainerNotesResponse;
 import com.enigma.ClassNexa.repository.TrainerNotesRepository;
-import com.enigma.ClassNexa.service.ClassesServiceBambang;
+import com.enigma.ClassNexa.service.ClassesService;
 import com.enigma.ClassNexa.service.ScheduleService;
 import com.enigma.ClassNexa.service.TrainerNotesService;
 import com.enigma.ClassNexa.service.TrainerService;
@@ -32,7 +32,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     private final TrainerNotesRepository trainerNotesRepository;
     private final TrainerService trainerService;
     private final ScheduleService scheduleService;
-    private final ClassesServiceBambang classesService;
+    private final ClassesService classesService;
 
     private TrainerNotesResponse toTrainerNotesResponse(TrainerNotes notes){
         return TrainerNotesResponse.builder()
@@ -125,7 +125,7 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
         Specification<TrainerNotes> productSpecification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (request.getClasses()!= null){
-                Classes byId = classesService.getById(request.getClasses());
+                Classes byId = classesService.getId(request.getClasses());
                 Predicate namePredicate = criteriaBuilder.equal(root.get("trainer"), byId.getTrainer());
                 predicates.add(namePredicate);
             }

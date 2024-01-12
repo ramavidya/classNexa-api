@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -51,6 +52,26 @@ class ScheduleControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    public void testLoginAndGetToken() throws Exception {
+        // Set up <link>MockMvc</link> instance
+
+        // Prepare the login request
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"superadmin@email.com\", \"password\": \"password\"}");
+
+        // Perform the login request
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").isString());
+
+        // Extract the token from the response
+        // You can retrieve the token from the response body or headers
+    }
 
     @Test
     void createScheduleSuccess() throws Exception {
