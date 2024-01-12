@@ -41,7 +41,6 @@ public class QuestionsServiceImpl implements QuestionsService {
 
         private final ScheduleService scheduleService;
 
-
         private final DetailClassParticipantRepository detailClassParticipantRepository;
 
         private final UserService userService;
@@ -64,7 +63,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                 UserCredential principal =(UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 Participant participant1 = participantService.getByUserCredential(principal);
 
-
                 Questions questions = Questions.builder()
                         .question(request.getQuestion())
                         .course(request.getCourse())
@@ -74,12 +72,7 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .schedule(schedule)
                         .build();
 
-
-
-                questionsRepository.saveAndFlush(questions);
-
-
-                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(questions.getParticipant().getId());
+                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(schedule.getClasses_id().getId());
                 for (int i=0;i<byClassId.size();i++){
                         Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
                         UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
@@ -88,8 +81,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                         String message = "Pertanyaan anda sudah kami terima"+ byParticipantId.getName();
                         sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
                 }
-
-
                 return toParticipantQuestionsResponse(questions);
         }
 
@@ -100,7 +91,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                 if (optionalQuestions.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Question Not Found");
 
                 return toParticipantQuestionsResponse(optionalQuestions.get());
-
         }
 
         @Override
@@ -111,27 +101,21 @@ public class QuestionsServiceImpl implements QuestionsService {
 
                 Schedule schedule = scheduleService.getByIdSchedule(request.getScheduleId());
 
-
                 Questions updateQuestion = optionalQuestions.get();
                 updateQuestion.setStatus(request.isStatus() == false);
 
                 Questions questions = questionsRepository.save(updateQuestion);
 
+                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(schedule.getClasses_id().getId());
+                for (int i=0;i<byClassId.size();i++){
+                        Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
+                        UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
 
-//                List<DetailClassParticipant> byClassId = detailClassParticipantRepository.findByClassesId(questions.getParticipant().getId());
-//                for (int i=0;i<byClassId.size();i++){
-//                        Participant byParticipantId = participantService.getByParticipantId(byClassId.get(i).getParticipant().getId());
-//                        UserCredential userCredential = userService.loadUserById(byParticipantId.getUserCredential().getId());
-//
-//                        String subject = "Selamat Datang di ClassNexa";
-//                        String message = "Pertanyaan anda sudah terjawab"+ byParticipantId.getName();
-//                        sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
-//                }
-
-
-
+                        String subject = "Selamat Datang di ClassNexa";
+                        String message = "Pertanyaan anda sudah terjawab"+ byParticipantId.getName();
+                        sendEmailService.sendEmail(userCredential.getEmail(), subject, message);
+                }
                 return toParticipantQuestionsResponse(questions);
-
         }
 
 
@@ -193,8 +177,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                         questionsResponses.add(questionsResponse);
                 }
 
-
-
                 QuestionsResponse trainerQuestionsResponse = QuestionsResponse.builder()
                         .questionsId(questions.getId())
                         .className(schedule.getClasses_id().getName())
@@ -203,8 +185,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                         .startClasses(schedule.getStart_class())
                         .endClasses(schedule.getEnd_class())
                         .build();
-
-
 
                 return trainerQuestionsResponse;
         }
@@ -257,24 +237,6 @@ public class QuestionsServiceImpl implements QuestionsService {
                                 );
                                 predicates.add(namePredicate);
                         }
-
-
-
-
-//                        else if (request.isStatus()) {
-//                                Predicate namePredicate = criteriaBuilder.isTrue(
-//                                        root.get("status")
-//                                );
-//                                predicates.add(namePredicate);
-//                        }
-
-//                        else {
-//                                Predicate namePredicate = criteriaBuilder.isTrue(
-//                                        root.get("status")
-//                                );
-//                                predicates.add(namePredicate);
-//                        }
-
 
 
                         return query.where(predicates.toArray(new Predicate[] {} )).getRestriction();
