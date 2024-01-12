@@ -1,6 +1,9 @@
 package com.enigma.ClassNexa.controller;
 
+import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.entity.Questions;
+import com.enigma.ClassNexa.entity.Schedule;
+import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.LoginRequest;
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
 import com.enigma.ClassNexa.model.response.QuestionsResponse;
@@ -53,45 +56,46 @@ class QuestionsControllerTest {
     @Autowired
     private AuthService authService;
 
+    private UserCredential userCredential;
 
 
 
-//    @Test
-//    void createQuestionsSuccess() throws Exception {
-//        LoginRequest requestLogin = new LoginRequest();
-//        requestLogin.setEmail("participant1@gmail.com");
-//        requestLogin.setPassword("password");
-//        authService.login(requestLogin);
-//
-//        Questions_Status questions_status = questionsStatusService.getById("e54fc766-8e94-4c3f-93e2-6a39fd286c10");
-//        Participant participant = participantService.getByParticipantId("0d83fa6f-83d6-4f2e-a2f5-686a548096d6");
-//        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
-//
-//        QuestionsRequest request = new QuestionsRequest();
-//        request.setQuestion("testttt");
-//        request.setCourse("java fundamental");
-//        request.setChapter("chapter 15");
-//        request.setStatusId(questions_status.getId());
-//        request.setParticipantId(participant.getId());
-//        request.setScheduleId(schedule.getId());
-//        questionsService.create(request);
-//
-//        mockMvc.perform(
-//                post("/api/questions")
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//        ).andExpect(
-//                status().isCreated()
-//        ).andDo(result -> {
-//            WebResponse<QuestionsResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-//            });
-//            assertEquals(HttpStatus.CREATED.getReasonPhrase(), response.getStatus());
-//            assertEquals("successfully create new Questions", response.getMessage());
-//            assertNotNull(response.getData());
-//
-//        });
-//    }
+
+    @Test
+    void createQuestionsSuccess() throws Exception {
+        LoginRequest requestLogin = new LoginRequest();
+        requestLogin.setEmail("participant1@gmail.com");
+        requestLogin.setPassword("password");
+        authService.login(requestLogin);
+
+
+
+        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
+
+        QuestionsRequest request = new QuestionsRequest();
+        request.setQuestion("testttt");
+        request.setCourse("java fundamental");
+        request.setChapter("chapter 15");
+        request.setStatus(false);
+        request.setScheduleId(schedule.getId());
+        questionsService.create(request);
+
+        mockMvc.perform(
+                post("/api/questions")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        ).andExpect(
+                status().isCreated()
+        ).andDo(result -> {
+            WebResponse<QuestionsResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertEquals(HttpStatus.CREATED.getReasonPhrase(), response.getStatus());
+            assertEquals("successfully create new Questions", response.getMessage());
+            assertNotNull(response.getData());
+
+        });
+    }
 
 //    @Test
 //    void createQuestionsForbiden() throws Exception {
