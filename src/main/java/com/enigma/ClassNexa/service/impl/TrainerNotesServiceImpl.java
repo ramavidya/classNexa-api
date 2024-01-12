@@ -1,23 +1,27 @@
 package com.enigma.ClassNexa.service.impl;
 
-import com.enigma.ClassNexa.entity.Classes;
-import com.enigma.ClassNexa.entity.Schedule;
-import com.enigma.ClassNexa.entity.Trainer;
-import com.enigma.ClassNexa.entity.TrainerNotes;
+import com.enigma.ClassNexa.entity.*;
+import com.enigma.ClassNexa.model.JwtClaim;
 import com.enigma.ClassNexa.model.request.SearchTrainerNotesRequest;
 import com.enigma.ClassNexa.model.request.TrainerNotesRequest;
 import com.enigma.ClassNexa.model.response.TrainerNotesResponse;
 import com.enigma.ClassNexa.repository.TrainerNotesRepository;
+import com.enigma.ClassNexa.security.JwtAuthenticationFilter;
+import com.enigma.ClassNexa.security.JwtUtil;
 import com.enigma.ClassNexa.service.ClassesService;
 import com.enigma.ClassNexa.service.ScheduleService;
 import com.enigma.ClassNexa.service.TrainerNotesService;
 import com.enigma.ClassNexa.service.TrainerService;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,8 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     private final TrainerService trainerService;
     private final ScheduleService scheduleService;
     private final ClassesService classesService;
+    private final JwtUtil jwtUtil;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private TrainerNotesResponse toTrainerNotesResponse(TrainerNotes notes){
         return TrainerNotesResponse.builder()
@@ -51,6 +57,14 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     public TrainerNotesResponse create(TrainerNotesRequest request) {
         Trainer byIdTrainer = trainerService.getByTrainerId(request.getTrainer());
         Schedule byIdSchedule = scheduleService.getByIdSchedule(request.getSchedule());
+
+        UserCredential userCredential = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        log.info(userCredential.getId());
+
+//        String string = jwtAuthenticationFilter.parseJTW(servletRequest);
+//        JwtClaim userInfoByToken = jwtUtil.getUserInfoByToken();
+//        log.info(userInfoByToken.getUserId());
 
         TrainerNotes trainerNotes =TrainerNotes.builder()
                 .notes(request.getNotes())

@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +47,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
         Classes byIdClass = classCNService.getId(request.getClasses_id());
+
+        Calendar calendarstart = Calendar.getInstance();
+        calendarstart.setTime(request.getStart_class());
+        calendarstart.add(Calendar.HOUR, -7);
+
+        Calendar calendarend = Calendar.getInstance();
+        calendarend.setTime(request.getEnd_class());
+        calendarend.add(Calendar.HOUR, -7);
+
         Schedule schedule = Schedule.builder()
                 .meeting_link(request.getMeeting_link())
-                .start_class(request.getStart_class())
+                .start_class(calendarstart.getTime())
                 .end_class(request.getEnd_class())
                 .classes_id(byIdClass)
                 .build();
@@ -117,17 +124,32 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Optional<Schedule> byIdSchedule = scheduleRepository.findById(request.getId());
         Classes byIdClass = classCNService.getId(request.getClasses_id());
-        Schedule schedule = Schedule.builder()
-                .id(byIdSchedule.get().getId())
-                .meeting_link(request.getMeeting_link())
-                .start_class(request.getStart_class())
-                .end_class(request.getEnd_class())
-                .classes_id(byIdClass)
-                .build();
 
-        Schedule save = scheduleRepository.save(schedule);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(byIdSchedule.get().getStart_class());
 
-        return toScheduleResponse(save);
+        calendar.add(Calendar.MINUTE, -30);
+
+        Date newDate = calendar.getTime();
+        Date date1 = new Date();
+
+        if (date1.toInstant().isBefore(newDate.toInstant())){
+            Schedule schedule = Schedule.builder()
+                    .id(byIdSchedule.get().getId())
+                    .meeting_link(request.getMeeting_link())
+                    .start_class(request.getStart_class())
+                    .end_class(request.getEnd_class())
+                    .classes_id(byIdClass)
+                    .build();
+
+            Schedule save = scheduleRepository.save(schedule);
+
+            return toScheduleResponse(save);
+        } else if (newDate.equals(date1.toInstant())) {
+            return null;
+        }else {
+            return null;
+        }
     }
 
     @Override
