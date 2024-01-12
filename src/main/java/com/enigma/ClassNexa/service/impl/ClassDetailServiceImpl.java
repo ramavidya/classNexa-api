@@ -27,6 +27,13 @@ public class ClassDetailServiceImpl implements ClassDetailService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void deleteById(String detailClassParticipant) {
+        validationUtils.validate(detailClassParticipant);
+        detailClassParticipantRepository.deleteById(detailClassParticipant);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<DetailClassParticipant> getByClassId(String id) {
         validationUtils.validate(id);
         return detailClassParticipantRepository.findByClassesId(id);

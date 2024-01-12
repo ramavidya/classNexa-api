@@ -13,6 +13,7 @@ public interface ClassDetailService {
     List<DetailClassParticipant> deleteByClassId(String id);
     DetailClassParticipant getByParticipantId (Participant participant);
     List<DetailClassParticipant> getAllDetail();
+    void deleteById(String detailClassParticipant);
 
 
 }

@@ -2,16 +2,19 @@ package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.Classes;
 import com.enigma.ClassNexa.entity.Schedule;
+import com.enigma.ClassNexa.model.request.LoginRequest;
 import com.enigma.ClassNexa.model.request.ScheduleRequest;
 import com.enigma.ClassNexa.model.response.ScheduleResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.repository.ClassesRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
+import com.enigma.ClassNexa.service.AuthService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -34,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,28 +55,23 @@ class ScheduleControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    public void testLoginAndGetToken() throws Exception {
-        // Set up <link>MockMvc</link> instance
+    @Value("admin@gmail.com")
+    private String email;
 
-        // Prepare the login request
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\": \"superadmin@email.com\", \"password\": \"password\"}");
+    @Value("password")
+    private String password;
 
-        // Perform the login request
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").isString());
-
-        // Extract the token from the response
-        // You can retrieve the token from the response body or headers
-    }
+    @Autowired
+    private AuthService authService;
 
     @Test
     void createScheduleSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        authService.login(loginRequest);
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDateStart = dateFormat.parse("2023-10-31 15:30:00");
         Date currentDateEnd = dateFormat.parse("2023-10-31 16:30:00");
@@ -82,15 +79,14 @@ class ScheduleControllerTest {
                 .meeting_link("zoomyooo")
                 .start_class(currentDateStart)
                 .end_class(currentDateEnd)
-                .classes_id("1")
+                .classes_id("22b16c19-3b11-42bb-ae94-ca67271f9a9a")
                 .build();
 
-        mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/schedule")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(scheduleRequest))
-                        .header("X-API-TOKEN", "test")
+                mockMvc.perform(
+                        post("/api/schedule")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(scheduleRequest))
         ).andExpectAll(
                 status().isCreated()
         ).andDo(result -> {
@@ -109,7 +105,12 @@ class ScheduleControllerTest {
 
     @Test
     void getScheduleByIdSuccess() throws Exception {
-        Schedule schedule = scheduleRepository.findById("a7f0be4b-c8d5-4fba-be7b-dfd623a0895a").orElseThrow();
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        authService.login(loginRequest);
+        Schedule schedule = scheduleRepository.findById("4232ca59-221b-4d8d-a5e3-c85f1739a8f9").orElseThrow();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDateStart = dateFormat.parse(String.valueOf(schedule.getStart_class()));
@@ -122,11 +123,11 @@ class ScheduleControllerTest {
                 .classes_id(schedule.getClasses_id().getId())
                 .build();
 
-        mockMvc.perform(
-                get("/api/schedule/"+schedule.getId())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-API-TOKEN", schedule.getId())
+                mockMvc.perform(
+                        get("/api/schedule/"+schedule.getId())
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(scheduleRequest))
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -142,25 +143,30 @@ class ScheduleControllerTest {
 
     @Test
     void updateScheduleSuccess() throws Exception {
-        Schedule schedule = scheduleRepository.findById("713c432a-0d9d-4093-b76c-f7eeaf0e01e7").orElseThrow();
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        authService.login(loginRequest);
+
+        Optional<Schedule> schedule = scheduleRepository.findById("7603ed36-399e-4e9f-b179-c4abcf231bee");
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date currentDateStart = dateFormat.parse(String.valueOf(schedule.getStart_class()));
-        Date currentDateEnd = dateFormat.parse(String.valueOf(schedule.getEnd_class()));
+        Date currentDateStart = dateFormat.parse(String.valueOf(schedule.get().getStart_class()));
+        Date currentDateEnd = dateFormat.parse(String.valueOf(schedule.get().getEnd_class()));
         ScheduleRequest scheduleRequest = ScheduleRequest.builder()
-                .id(schedule.getId())
+                .id(schedule.get().getId())
                 .meeting_link("disini meeting link baru")
                 .start_class(currentDateStart)
                 .end_class(currentDateEnd)
-                .classes_id("1")
+                .classes_id("22b16c19-3b11-42bb-ae94-ca67271f9a9a")
                 .build();
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put("/api/schedule")
+                put("/api/schedule")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleRequest))
-                        .header("X-API-TOKEN", "test")
         ).andExpectAll(
                 status().isCreated()
         ).andDo(result -> {
@@ -178,6 +184,11 @@ class ScheduleControllerTest {
 
     @Test
     void getAllScheduleSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        authService.login(loginRequest);
 
         mockMvc.perform(
                 get("/api/schedule")
@@ -188,14 +199,19 @@ class ScheduleControllerTest {
         ).andDo(result -> {
             WebResponse<List<ScheduleResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
-            assertEquals(13, response.getData().size());
+            assertEquals(20, response.getData().size());
         });
     }
 
     @Test
     void deleteScheduleSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        authService.login(loginRequest);
 
-        Optional<Classes> byId = classesRepository.findById("1");
+        Optional<Classes> byId = classesRepository.findById("22b16c19-3b11-42bb-ae94-ca67271f9a9a");
         Classes classes = Classes.builder()
                 .id(byId.get().getId())
                 .name(byId.get().getName())

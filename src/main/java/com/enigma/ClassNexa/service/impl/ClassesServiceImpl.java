@@ -207,7 +207,38 @@ public class ClassesServiceImpl implements ClassesService {
         return spec;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ClassResponse deleteDetailParticipant(UpdateClassesRequest request) {
 
+        Optional<Classes> classes = classesRepository.findById(request.getId());
+        if (classes.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, " Class Room Not Found");
+        Trainer trainer = trainerService.getByTrainerId(request.getTrainerId());
+        Classes room = classes.get();
+        room.setName(request.getName());
+        room.setTrainer(trainer);
+        List<DetailClassParticipant> detailClassParticipants = new ArrayList<>();
+        for (DetailClassParticipantRequest detailClassParticipantRequest : request.getParticipants()) {
+            Participant participant = participantService.getByParticipantId(detailClassParticipantRequest.getId());
+            DetailClassParticipant byParticipantId =
+                    classDetailService.getByParticipantId(participant);
+            if (byParticipantId != null) {
+                classDetailService.deleteById(byParticipantId.getId());
+            }
+
+        }
+        classesRepository.save(room);
+
+        List<String> result = detailClassParticipants.stream().map(dcp ->
+                dcp.getParticipant().getName()).collect(Collectors.toList());
+
+        return ClassResponse.builder()
+                .id(room.getId())
+                .classes(room.getName())
+                .trainer(room.getTrainer().getName())
+                .participant(result)
+                .build();
+    }
 
 
 

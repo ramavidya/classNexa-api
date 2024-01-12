@@ -117,7 +117,7 @@ public class ClassesControllerTest {
         participantRequestList.add(classParticipantRequest);
 
         UpdateClassesRequest request = new UpdateClassesRequest();
-        request.setId("0033c465-f787-4287-8423-fec514e50a3c");
+        request.setId("b04d8d68-aadd-4ac7-9718-c07c75ab78d8");
         request.setName("java batch 21");
         request.setTrainerId("afe27d13-6a9a-411d-86f2-ba8f24224ebd");
         request.setParticipants(participantRequestList);
@@ -168,12 +168,12 @@ public class ClassesControllerTest {
                 .build();
         String token = authService.login(loginRequest);
 
-        Optional<Classes> classes = classesRepository.findById("0033c465-f787-4287-8423-fec514e50a3c");
+        Optional<Classes> classes = classesRepository.findById("b04d8d68-aadd-4ac7-9718-c07c75ab78d8");
 
 
         {
             mockMvc.perform(
-                    get("/api/classes/0033c465-f787-4287-8423-fec514e50a3c")
+                    get("/api/classes/b04d8d68-aadd-4ac7-9718-c07c75ab78d8")
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(classes))
@@ -194,7 +194,7 @@ public class ClassesControllerTest {
 
         {
             mockMvc.perform(
-                    delete("/api/classes/0033c465-f787-4287-8423-fec514e50a3c")
+                    delete("/api/classes/b04d8d68-aadd-4ac7-9718-c07c75ab78d8")
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString("Ok"))
