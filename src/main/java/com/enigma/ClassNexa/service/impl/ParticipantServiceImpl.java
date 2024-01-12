@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -143,7 +144,6 @@ public class ParticipantServiceImpl implements ParticipantService {
         return participantRepository.findById(id).orElse(null);
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<Participant> getAllParticipant() {
@@ -160,5 +160,10 @@ public class ParticipantServiceImpl implements ParticipantService {
             return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
         };
         return specification;
+    }
+
+    @Override
+    public Participant getByUserCredential(UserCredential userCredential) {
+        return participantRepository.findByUserCredential(userCredential).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"participant not found"));
     }
 }

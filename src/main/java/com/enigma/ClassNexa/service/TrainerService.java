@@ -1,6 +1,7 @@
 package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Trainer;
+import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
 import com.enigma.ClassNexa.model.request.UserCreateRequest;
@@ -18,4 +19,5 @@ public interface TrainerService {
     String updatePassword(UpdatePasswordRequest request);
     String delete(String id);
     Trainer getByTrainerId(String id);
+    Trainer getByUserCredential(UserCredential userCredential);
 }

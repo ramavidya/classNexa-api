@@ -76,6 +76,11 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    public Trainer getByUserCredential(UserCredential userCredential) {
+        return trainerRepository.findByUserCredential(userCredential).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "trainer not found"));
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public UserResponse update(ProfileUpdateRequest request) {
         UserResponse findId = getById(request.getId());
