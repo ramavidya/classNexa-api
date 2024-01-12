@@ -29,6 +29,12 @@ public class ClassesController {
     public ResponseEntity<?> createNew(@RequestBody ClassesRequest request){
         ClassResponse classResponse = classesService.create(request);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
+                .pagingResponse(PagingResponse.builder()
+                        .totalElements(1l)
+                        .size(10)
+                        .page(1)
+                        .totalPages(1)
+                        .build())
                 .message("Success Create Class Room")
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .data(classResponse)
@@ -41,6 +47,30 @@ public class ClassesController {
     public ResponseEntity<?> update(@RequestBody UpdateClassesRequest request){
         ClassResponse classResponse = classesService.update(request);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
+                .pagingResponse(PagingResponse.builder()
+                        .totalElements(1l)
+                        .size(10)
+                        .page(1)
+                        .totalPages(1)
+                        .build())
+                .message("Success Update Class Room")
+                .status(HttpStatus.OK.getReasonPhrase())
+                .data(classResponse)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(path = "/details/participants")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateDetailParticipant(@RequestBody UpdateClassesRequest request){
+        ClassResponse classResponse = classesService.deleteDetailParticipant(request);
+        WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
+                .pagingResponse(PagingResponse.builder()
+                        .totalElements(1l)
+                        .size(10)
+                        .page(1)
+                        .totalPages(1)
+                        .build())
                 .message("Success Update Class Room")
                 .status(HttpStatus.OK.getReasonPhrase())
                 .data(classResponse)
@@ -63,9 +93,15 @@ public class ClassesController {
 
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasRole('PARTICIPANT')")
-    public ResponseEntity<?> getById(@PathVariable String id){
+    public ResponseEntity<?> getById(@PathVariable String id ){
         ClassResponse classResponse = classesService.getById(id);
         WebResponse<ClassResponse> response = WebResponse.<ClassResponse>builder()
+                .pagingResponse(PagingResponse.builder()
+                        .totalElements(1l)
+                        .size(10)
+                        .page(1)
+                        .totalPages(1)
+                        .build())
                 .message("Success Get Class Room")
                 .status(HttpStatus.OK.getReasonPhrase())
                 .data(classResponse)

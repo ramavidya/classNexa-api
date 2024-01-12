@@ -15,6 +15,7 @@ public interface ClassesService {
     Classes getId(String id);
     ClassResponse getById(String id);
     Page<ClassResponse> getAll(SearchDetailClassRequest response);
+    ClassResponse deleteDetailParticipant(UpdateClassesRequest request);
 
 
 }
