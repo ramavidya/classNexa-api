@@ -2,6 +2,8 @@ package com.enigma.ClassNexa.service;
 
 import com.enigma.ClassNexa.entity.Participant;
 
+import com.enigma.ClassNexa.entity.UserCredential;
+
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
@@ -23,4 +25,5 @@ public interface ParticipantService {
     String delete(String id);
     Participant getByParticipantId(String id);
     List<Participant> getAllParticipant();
+    Participant getByUserCredential(UserCredential userCredential);
 }
