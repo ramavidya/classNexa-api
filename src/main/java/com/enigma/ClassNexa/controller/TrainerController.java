@@ -95,7 +95,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('TRAINER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = trainerService.delete(id);

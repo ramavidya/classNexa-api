@@ -33,7 +33,7 @@ public class ClassesController {
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .data(classResponse)
                 .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping
