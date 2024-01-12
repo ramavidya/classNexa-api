@@ -2,16 +2,19 @@ package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.Classes;
 import com.enigma.ClassNexa.entity.Schedule;
+import com.enigma.ClassNexa.model.request.LoginRequest;
 import com.enigma.ClassNexa.model.request.ScheduleRequest;
 import com.enigma.ClassNexa.model.response.ScheduleResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.repository.ClassesRepository;
 import com.enigma.ClassNexa.repository.ScheduleRepository;
+import com.enigma.ClassNexa.service.AuthService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -53,28 +56,23 @@ class ScheduleControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    public void testLoginAndGetToken() throws Exception {
-        // Set up <link>MockMvc</link> instance
+    @Value("admin@gmail.com")
+    private String email;
 
-        // Prepare the login request
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\": \"superadmin@email.com\", \"password\": \"password\"}");
+    @Value("password")
+    private String password;
 
-        // Perform the login request
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").isString());
-
-        // Extract the token from the response
-        // You can retrieve the token from the response body or headers
-    }
+    @Autowired
+    private AuthService authService;
 
     @Test
     void createScheduleSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        String token = authService.login(loginRequest);
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDateStart = dateFormat.parse("2023-10-31 15:30:00");
         Date currentDateEnd = dateFormat.parse("2023-10-31 16:30:00");
@@ -90,7 +88,7 @@ class ScheduleControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(scheduleRequest))
-                        .header("X-API-TOKEN", "test")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isCreated()
         ).andDo(result -> {
@@ -109,6 +107,11 @@ class ScheduleControllerTest {
 
     @Test
     void getScheduleByIdSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("admin@gmail.com")
+                .password("password")
+                .build();
+        String token = authService.login(loginRequest);
         Schedule schedule = scheduleRepository.findById("a7f0be4b-c8d5-4fba-be7b-dfd623a0895a").orElseThrow();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -126,7 +129,7 @@ class ScheduleControllerTest {
                 get("/api/schedule/"+schedule.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-API-TOKEN", schedule.getId())
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {

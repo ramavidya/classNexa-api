@@ -139,9 +139,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             return toScheduleResponse(save);
         } else if (newDate.equals(date1.toInstant())) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change schedule");
         }else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change schedule");
         }
     }
 
