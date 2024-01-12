@@ -21,9 +21,7 @@ public class Questions {
 
     private String chapter;
 
-    @ManyToOne
-    @JoinColumn(name = "questions_status_id")
-    private Questions_Status questionsStatus;
+    private boolean status;
 
     @ManyToOne
     @JoinColumn(name = "participant_id")
