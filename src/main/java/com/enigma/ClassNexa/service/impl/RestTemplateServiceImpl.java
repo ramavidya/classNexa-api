@@ -32,7 +32,7 @@ public class RestTemplateServiceImpl implements RestTemplateService {
         // Form data key-value pair
         String keyTarget = "target";
         String keyMessage = "message";
-        String valueMessage = "Hello Trainee Enigma Camp 2.0 \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n  *#Kelompok_2_ngebul*";
+        String valueMessage = "Hello Trainee Enigma Camp 2.0 \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n*#Kelompok_2_ngebul*";
 
         for (String targetNumber : request.getNumber()) {
             // URL endpoint

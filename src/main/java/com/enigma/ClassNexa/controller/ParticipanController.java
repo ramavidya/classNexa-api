@@ -96,7 +96,7 @@ public class ParticipanController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('PARTICIPANT')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = participantService.delete(id);
