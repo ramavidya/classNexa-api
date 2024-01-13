@@ -45,8 +45,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional(rollbackFor = Exception.class)
     public ScheduleResponse create(ScheduleRequest request) {
         Classes byIdClass = classCNService.getId(request.getClasses_id());
-
         if (request.getStart_class().equals(request.getEnd_class())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Time is same");
+
         Schedule schedule = Schedule.builder()
                 .meeting_link(request.getMeeting_link())
                 .start_class(request.getStart_class())
