@@ -41,6 +41,8 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private TrainerNotesResponse toTrainerNotesResponse(TrainerNotes notes){
+//        scheduleService.getByIdSchedule(notes.getSchedule().getId())
+        log.info(notes.getSchedule().getId());
         return TrainerNotesResponse.builder()
                 .id(notes.getId())
                 .notes(notes.getNotes())
@@ -80,14 +82,15 @@ public class TrainerNotesServiceImpl implements TrainerNotesService {
         List<TrainerNotes> all = trainerNotesRepository.findAll();
         List<TrainerNotesResponse> trainerNotes = new ArrayList<>();
         for (int i=0;i< all.size();i++){
-            TrainerNotesResponse notes = TrainerNotesResponse.builder()
+            TrainerNotes notes = TrainerNotes.builder()
                     .id(all.get(i).getId())
                     .notes(all.get(i).getNotes())
-                    .trainer_id(all.get(i).getTrainer().getId())
-                    .trainer(all.get(i).getTrainer().getName())
-                    .schedule_id(all.get(i).getSchedule().getId())
+                    .trainer(all.get(i).getTrainer())
+                    .schedule(all.get(i).getSchedule())
                     .build();
-            trainerNotes.add(notes);
+            TrainerNotesResponse trainerNotesResponse = toTrainerNotesResponse(notes);
+
+            trainerNotes.add(trainerNotesResponse);
         }
         return trainerNotes;
     }
