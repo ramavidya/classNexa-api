@@ -10,4 +10,5 @@ import lombok.*;
 public class AttendDetailRequest {
     private String participantId;
     private String categoryId;
+    private String absentReasons;
 }

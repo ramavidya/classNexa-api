@@ -1,6 +1,7 @@
 package com.enigma.ClassNexa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Setter
@@ -15,4 +16,5 @@ public class Attendance {
     private String id;
 
     private String category;
+
 }

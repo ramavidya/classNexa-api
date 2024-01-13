@@ -23,6 +23,9 @@ public class Attend {
     @JoinColumn(name = "attendance_id")
     private Attendance attendance;
 
+    @Column(name = "absent_reasons")
+    private String absentReasons;
+
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
