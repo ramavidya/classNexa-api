@@ -6,6 +6,7 @@ import com.enigma.ClassNexa.entity.Schedule;
 import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.LoginRequest;
 import com.enigma.ClassNexa.model.request.QuestionsRequest;
+import com.enigma.ClassNexa.model.request.UpdateStatusRequest;
 import com.enigma.ClassNexa.model.response.QuestionsResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.*;
@@ -42,8 +43,6 @@ class QuestionsControllerTest {
     @Autowired
     private TrainerService trainerService;
 
-
-
     @Autowired
     private ScheduleService scheduleService;
 
@@ -56,8 +55,6 @@ class QuestionsControllerTest {
     @Autowired
     private AuthService authService;
 
-    private UserCredential userCredential;
-
 
 
 
@@ -67,8 +64,6 @@ class QuestionsControllerTest {
         requestLogin.setEmail("participant1@gmail.com");
         requestLogin.setPassword("password");
         authService.login(requestLogin);
-
-
 
         Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
 
@@ -97,102 +92,33 @@ class QuestionsControllerTest {
         });
     }
 
-//    @Test
-//    void createQuestionsForbiden() throws Exception {
-////        LoginRequest requestLogin = new LoginRequest();
-////        requestLogin.setEmail("participant1@gmail.com");
-////        requestLogin.setPassword("password");
-////        authService.login(requestLogin);
-//
-//        Questions_Status questions_status = questionsStatusService.getById("e54fc766-8e94-4c3f-93e2-6a39fd286c10");
-//        Participant participant = participantService.getByParticipantId("0d83fa6f-83d6-4f2e-a2f5-686a548096d6");
-//        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
-//
-//        QuestionsRequest request = new QuestionsRequest();
-//        request.setQuestion("testttt");
-//        request.setCourse("java fundamental");
-//        request.setChapter("chapter 15");
-//        request.setStatusId(questions_status.getId());
-//        request.setParticipantId(participant.getId());
-//        request.setScheduleId(schedule.getId());
-//        questionsService.create(request);
-//
-//        mockMvc.perform(
-//                post("/api/questions")
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//        ).andExpect(
-//                status().isForbidden()
-//        );
-//    }
-
-
     @Test
-    void createQuestionsBadRequest() throws Exception {
-        LoginRequest requestLogin = new LoginRequest();
-        requestLogin.setEmail("participant1@gmail.com");
-        requestLogin.setPassword("password");
-        authService.login(requestLogin);
+    void createQuestionsForbiden() throws Exception {
 
-//        Questions_Status questions_status = questionsStatusService.getById("e54fc766-8e94-4c3f-93e2-6a39fd286c10");
-//        Participant participant = participantService.getByParticipantId("0d83fa6f-83d6-4f2e-a2f5");
-//        Schedule schedule = scheduleService.getByIdSchedule("d6d18f05-24ab-4f18-ab5d-fa5a1c633f20");
+        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
 
         QuestionsRequest request = new QuestionsRequest();
         request.setQuestion("testttt");
         request.setCourse("java fundamental");
         request.setChapter("chapter 15");
-//        request.setStatusId("e54fc766-8e94-4c3f-93e2-6a39fd286c10");
-//        request.setParticipantId("0d83fa6f-83d6-4f2e-a2f5");
-        request.setScheduleId("d6d18f05-24ab-4f18-ab5d-fa5a1c633f20");
-//        questionsService.create(request);
-
+        request.setStatus(false);
+        request.setScheduleId(schedule.getId());
 
         mockMvc.perform(
                 post("/api/questions")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-
-        ).andExpectAll(
-                status().isNotFound()
-        ).andDo(result -> {
-            System.out.println(status());
-        });
-
-
-    }
-
-    @Test
-    void getByIdSucces() throws Exception {
-        LoginRequest requestLogin = new LoginRequest();
-        requestLogin.setEmail("participant1@gmail.com");
-        requestLogin.setPassword("password");
-        authService.login(requestLogin);
-
-        Questions questions = questionsService.getById("62b286ff-e880-4e1b-a213-a7a19ec1faef");
-
-        mockMvc.perform(
-                get("/api/questions/" + questions.getId())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                status().isOk()
-        ).andDo(result -> {
-            WebResponse<QuestionsResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-            });
-            assertEquals("successfully get Questions by id", response.getMessage());
-            assertEquals(HttpStatus.OK.getReasonPhrase(), response.getStatus());
-            assertNotNull(response.getData());
-
-        });
+                status().isForbidden()
+        );
     }
+
 
     @Test
     void getAllSuccess() throws Exception {
         LoginRequest requestLogin = new LoginRequest();
-        requestLogin.setEmail("participant1@gmail.com");
+        requestLogin.setEmail("trainer1@gmail.com");
         requestLogin.setPassword("password");
         authService.login(requestLogin);
 
@@ -214,50 +140,61 @@ class QuestionsControllerTest {
         });
     }
 
-//    @Test
-//    void updateAddressSuccess() throws Exception {
-//        LoginRequest requestLogin = new LoginRequest();
-//        requestLogin.setEmail("trainer1@gmail.com");
-//        requestLogin.setPassword("password");
-//        authService.login(requestLogin);
-//
-//        Questions questions = questionsService.getById("3ad0e7aa-cba9-42cf-a9b8-b8a75f064fa4");
-//        Questions_Status questions_status = questionsStatusService.getById("a522e1e4-433c-4837-be10-7817c7d9019b");
-//        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
-//
-//        UpdateStatusRequest request = new UpdateStatusRequest();
-//        request.setQuestionsId(questions.getId());
-//        request.setScheduleId(schedule.getId());
-//        request.setStatusId(questions_status.getId());
-//        questionsService.update(request);
-//
-//        mockMvc.perform(
-//                put("/api/questions")
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//
-//        ).andExpect(
-//                status().isCreated()
-//        ).andDo(result -> {
-//            WebResponse<QuestionsResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-//            });
-//            assertEquals("Succesfully update status Questions", response.getMessage());
-//            assertEquals(HttpStatus.CREATED.getReasonPhrase(), response.getStatus());
-//            assertNotNull(response.getData());
-//
-//        });
-//
-//    }
+    @Test
+    void getAllForbiden() throws Exception {
+
+        mockMvc.perform(
+                get("/api/questions" )
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                status().isForbidden()
+        );
+    }
 
     @Test
-    void deleteAddressSuccess() throws Exception {
+    void updateQuestionsSuccess() throws Exception {
         LoginRequest requestLogin = new LoginRequest();
         requestLogin.setEmail("trainer1@gmail.com");
         requestLogin.setPassword("password");
         authService.login(requestLogin);
 
-        Questions questions = questionsService.getById("62b286ff-e880-4e1b-a213-a7a19ec1faef");
+        Questions questions = questionsService.getById("358df948-fa5f-4b3d-bbe4-ea914db5fe3f");
+        Schedule schedule = scheduleService.getByIdSchedule("82c17d6e-32fe-4b27-9156-2b33f00580dd");
+
+        UpdateStatusRequest request = new UpdateStatusRequest();
+        request.setQuestionsId(questions.getId());
+        request.setScheduleId(schedule.getId());
+        request.setQuestionsId(questions.getId());
+        questionsService.update(request);
+
+        mockMvc.perform(
+                put("/api/questions")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+
+        ).andExpect(
+                status().isCreated()
+        ).andDo(result -> {
+            WebResponse<QuestionsResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertEquals("Succesfully update status Questions", response.getMessage());
+            assertEquals(HttpStatus.CREATED.getReasonPhrase(), response.getStatus());
+            assertNotNull(response.getData());
+
+        });
+
+    }
+
+    @Test
+    void deleteQuestionsByIdSuccess() throws Exception {
+        LoginRequest requestLogin = new LoginRequest();
+        requestLogin.setEmail("trainer1@gmail.com");
+        requestLogin.setPassword("password");
+        authService.login(requestLogin);
+
+        Questions questions = questionsService.getById("358df948-fa5f-4b3d-bbe4-ea914db5fe3f");
 
         mockMvc.perform(
                 delete("/api/questions/" + questions.getId())
@@ -272,7 +209,18 @@ class QuestionsControllerTest {
             assertEquals(HttpStatus.OK.getReasonPhrase(), response.getStatus());
             assertEquals("OK", response.getData());
         });
+    }
 
+    @Test
+    void deleteQuestionsByIdForbiden() throws Exception {
+
+        mockMvc.perform(
+                delete("/api/questions")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isForbidden()
+        );
     }
 
 
