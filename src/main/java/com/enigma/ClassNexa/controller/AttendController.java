@@ -56,7 +56,7 @@ public class AttendController {
         WebResponse<List<SingleAttendResponse>> response = WebResponse.<List<SingleAttendResponse>>builder()
                 .pagingResponse(PagingResponse.builder()
                         .page(page)
-                        .size(size)
+                        .size(allWithFilter.size())
                         .totalPages(1)
                         .totalElements(allWithFilter.stream().count())
                         .build())
@@ -72,6 +72,12 @@ public class AttendController {
         SingleAttendResponse attendById = attendService.getAttendById(id);
         WebResponse<SingleAttendResponse> response = WebResponse.<SingleAttendResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
+                .pagingResponse(PagingResponse.builder()
+                        .page(1)
+                        .size(1)
+                        .totalPages(1)
+                        .totalElements(1l)
+                        .build())
                 .message("success")
                 .data(attendById)
                 .build();
@@ -94,6 +100,12 @@ public class AttendController {
         SingleAttendResponse update = attendService.Update(request);
         WebResponse<SingleAttendResponse> response = WebResponse.<SingleAttendResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
+                .pagingResponse(PagingResponse.builder()
+                        .totalElements(1l)
+                        .totalPages(1)
+                        .size(1)
+                        .page(1)
+                        .build())
                 .message("success")
                 .data(update)
                 .build();
