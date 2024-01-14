@@ -1,6 +1,9 @@
 package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.entity.Classes;
+import com.enigma.ClassNexa.entity.DetailClassParticipant;
+import com.enigma.ClassNexa.entity.Participant;
+import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.repository.ClassesRepository;
@@ -12,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -47,13 +51,27 @@ public class ClassesControllerTest {
     @Autowired
     private ClassesRepository classesRepository;
 
+    @Autowired
+    private TrainerRepository trainerRepository;
+
+    @Autowired
+    private ParticipantRepository participantRepository;
+
+    @Autowired
+    private DetailClassParticipantRepository detailClassParticipantRepository;
+
+    @Value("${app.class-nexa.email}")
+    private String email;
+
+    @Value("${app.class-nexa.password}")
+    private String password;
 
 
     @Test
     void loginAdminSuccess() throws Exception {
         LoginRequest request = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         mockMvc.perform(
                 post("/api/auth/login")
@@ -73,20 +91,34 @@ public class ClassesControllerTest {
     @Test
     void createdSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         String token = authService.login(loginRequest);
 
+        Participant participant = new Participant();
+        participant.setName("Anka");
+        participant.setAddress("Pesona Jakarta Street");
+        participant.setGender("Male");
+        participant.setPhoneNumber("081398817317");
+        participantRepository.save(participant);
+
         DetailClassParticipantRequest classParticipantRequest = new DetailClassParticipantRequest();
-        classParticipantRequest.setId("23df3a1c-1bc7-4c7e-b3a4-ef312d6bc802");
+        classParticipantRequest.setId(participant.getId());
 
         List<DetailClassParticipantRequest> participantRequestList = new ArrayList<>();
         participantRequestList.add(classParticipantRequest);
 
+        Trainer trainer = new Trainer();
+        trainer.setName("Rindu");
+        trainer.setAddress("Jagakarsa III");
+        trainer.setPhoneNumber("081398817317");
+        trainer.setGender("Female");
+        trainerRepository.save(trainer);
+
         ClassesRequest request = new ClassesRequest();
-        request.setName("java batch 21");
-        request.setTrainerId("afe27d13-6a9a-411d-86f2-ba8f24224ebd");
+        request.setName("java batch 1");
+        request.setTrainerId(trainer.getId());
         request.setParticipants(participantRequestList);
 
         {
@@ -105,21 +137,40 @@ public class ClassesControllerTest {
     @Test
     void updatedSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         String token = authService.login(loginRequest);
 
+        Participant participant = new Participant();
+        participant.setName("Dirga");
+        participant.setAddress("Pesona Jakarta Street");
+        participant.setGender("Male");
+        participant.setPhoneNumber("081398817317");
+        participantRepository.save(participant);
+
         DetailClassParticipantRequest classParticipantRequest = new DetailClassParticipantRequest();
-        classParticipantRequest.setId("0b83f30a-25c1-48fb-83fa-7656237f4ded");
+        classParticipantRequest.setId(participant.getId());
 
         List<DetailClassParticipantRequest> participantRequestList = new ArrayList<>();
         participantRequestList.add(classParticipantRequest);
 
+        Trainer trainer = new Trainer();
+        trainer.setName("Cecil");
+        trainer.setAddress("Jagakarsa III");
+        trainer.setPhoneNumber("081398817317");
+        trainer.setGender("Female");
+        trainerRepository.save(trainer);
+
+        Classes classes = new Classes();
+        classes.setName("java batch 2");
+        classes.setTrainer(trainer);
+        classesRepository.save(classes);
+
         UpdateClassesRequest request = new UpdateClassesRequest();
-        request.setId("b04d8d68-aadd-4ac7-9718-c07c75ab78d8");
-        request.setName("java batch 21");
-        request.setTrainerId("afe27d13-6a9a-411d-86f2-ba8f24224ebd");
+        request.setId(classes.getId());
+        request.setName(classes.getName());
+        request.setTrainerId(classes.getTrainer().getId());
         request.setParticipants(participantRequestList);
         classesRepository.findById(request.getId());
 
@@ -139,8 +190,8 @@ public class ClassesControllerTest {
     @Test
     void getAllSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         String token = authService.login(loginRequest);
 
@@ -163,17 +214,42 @@ public class ClassesControllerTest {
     @Test
     void getByIdSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         String token = authService.login(loginRequest);
 
-        Optional<Classes> classes = classesRepository.findById("b04d8d68-aadd-4ac7-9718-c07c75ab78d8");
+        Trainer trainer = new Trainer();
+        trainer.setName("Laura");
+        trainer.setAddress("Jagakarsa III");
+        trainer.setPhoneNumber("081398817317");
+        trainer.setGender("Female");
+        trainerRepository.save(trainer);
+
+        Classes classes = new Classes();
+        classes.setName("java batch 3");
+        classes.setTrainer(trainer);
+        classesRepository.save(classes);
+
+        Participant participant = new Participant();
+        participant.setName("Raja");
+        participant.setAddress("Pesona Jakarta Street");
+        participant.setGender("Male");
+        participant.setPhoneNumber("081398817317");
+        participantRepository.save(participant);
+
+        DetailClassParticipant detailClassParticipant = new DetailClassParticipant();
+        detailClassParticipant.setParticipant(participant);
+        detailClassParticipant.setClasses(classes);
+        detailClassParticipantRepository.save(detailClassParticipant);
+
+
+        String id = classes.getId();
 
 
         {
             mockMvc.perform(
-                    get("/api/classes/b04d8d68-aadd-4ac7-9718-c07c75ab78d8")
+                    get("/api/classes/{id}",id)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(classes))
@@ -187,14 +263,26 @@ public class ClassesControllerTest {
     @Test
     void deleteSuccess() throws Exception {
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("admin-classes@gmail.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
         String token = authService.login(loginRequest);
 
+        Trainer trainer = new Trainer();
+        trainer.setName("Mia");
+        trainer.setAddress("Jagakarsa III");
+        trainer.setPhoneNumber("081398817317");
+        trainer.setGender("Female");
+        trainerRepository.save(trainer);
+
+        Classes classes = new Classes();
+        classes.setName("java batch 4");
+        classes.setTrainer(trainer);
+        classesRepository.save(classes);
+
         {
             mockMvc.perform(
-                    delete("/api/classes/b04d8d68-aadd-4ac7-9718-c07c75ab78d8")
+                    delete("/api/classes/{id}", classes.getId())
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString("Ok"))
@@ -208,25 +296,69 @@ public class ClassesControllerTest {
     @Test
     void classesUnSuccess() throws Exception {
 
+
+        List<Classes> classes = classesRepository.findAll();
+
+        {
+            mockMvc.perform(
+                    get("/api/classes")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(classes))
+            ).andExpectAll(
+                    status().isForbidden()
+            );
+        }
+    }
+
+    @Test
+    void updatedForDeleteParticipantSuccess() throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email(email)
+                .password(password)
+                .build();
+        String token = authService.login(loginRequest);
+
+        Participant participant = new Participant();
+        participant.setName("Alex");
+        participant.setAddress("Pesona Jakarta Street");
+        participant.setPhoneNumber("081398817317");
+        participantRepository.save(participant);
+
         DetailClassParticipantRequest classParticipantRequest = new DetailClassParticipantRequest();
-        classParticipantRequest.setId("23df3a1c-1bc7-4c7e-b3a4-ef312d6bc802");
+        classParticipantRequest.setId(participant.getId());
 
         List<DetailClassParticipantRequest> participantRequestList = new ArrayList<>();
         participantRequestList.add(classParticipantRequest);
 
-        ClassesRequest request = new ClassesRequest();
-        request.setName("java batch 21");
-        request.setTrainerId("afe27d13-6a9a-411d-86f2-ba8f24224ebd");
+        Trainer trainer = new Trainer();
+        trainer.setName("Mawar");
+        trainer.setAddress("Jagakarsa III");
+        trainer.setPhoneNumber("081398817317");
+        trainer.setGender("Female");
+        trainerRepository.save(trainer);
+
+        Classes classes = new Classes();
+        classes.setName("java batch 5");
+        classes.setTrainer(trainer);
+        classesRepository.save(classes);
+
+        UpdateClassesRequest request = new UpdateClassesRequest();
+        request.setId(classes.getId());
+        request.setName(classes.getName());
+        request.setTrainerId(classes.getTrainer().getId());
         request.setParticipants(participantRequestList);
+        classesRepository.findById(request.getId());
 
         {
             mockMvc.perform(
-                    post("/api/classes")
+                    put("/api/classes/details/participants")
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request))
+                            .header("Authorization", token)
             ).andExpectAll(
-                    status().isForbidden()
+                    status().isOk()
             );
         }
     }
