@@ -49,6 +49,7 @@ public class AttendanceControllerTest {
         Attendance request = new Attendance();
         request.setId("6");
         request.setCategory("sad");
+        attendanceRepository.save(request);
         mockMvc.perform(post("/api/attendance")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +80,7 @@ public class AttendanceControllerTest {
                 .build();
         String token = authService.login(loginRequest);
         mockMvc.perform(
-                get("/api/attendance/1")
+                get("/api/attendance/6")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
