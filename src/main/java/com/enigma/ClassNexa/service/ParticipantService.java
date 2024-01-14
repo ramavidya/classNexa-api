@@ -18,7 +18,7 @@ import java.util.List;
 public interface ParticipantService {
     String create(UserCreateRequest request) throws IOException;
     Page<Participant> getAll(SearchUserRequest request);
-    void createList(List<Participant> participants);
+    void createList(List<Participant> participants) throws IOException;
     UserResponse getById(String request);
     UserResponse update(ProfileUpdateRequest request);
     String updatePassword(UpdatePasswordRequest request);
@@ -26,4 +26,5 @@ public interface ParticipantService {
     Participant getByParticipantId(String id);
     List<Participant> getAllParticipant();
     Participant getByUserCredential(UserCredential userCredential);
+    String getClasses(Participant participant);
 }

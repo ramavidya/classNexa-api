@@ -1,10 +1,12 @@
 package com.enigma.ClassNexa.service.impl;
 
+import com.enigma.ClassNexa.entity.DetailClassParticipant;
 import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.ParticipantRepository;
+import com.enigma.ClassNexa.service.ClassDetailService;
 import com.enigma.ClassNexa.service.ParticipantService;
 import com.enigma.ClassNexa.service.RestTemplateService;
 import com.enigma.ClassNexa.service.UserService;
@@ -31,6 +33,7 @@ public class ParticipantServiceImpl implements ParticipantService {
     private final ParticipantRepository participantRepository;
     private final UserService userService;
     private final RestTemplateService restTemplateService;
+    private final ClassDetailService classDetailService;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String create(UserCreateRequest request) throws IOException {
@@ -49,15 +52,23 @@ public class ParticipantServiceImpl implements ParticipantService {
             TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
                     .number(List.of(participant.getPhoneNumber()))
                     .build();
-            restTemplateService.sendMessageRegisterParticipant(buildTargetNumber);
+            restTemplateService.sendMessageRegisterWhatsapp(buildTargetNumber);
         }
         return participant.getName();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createList(List<Participant> participants) {
-        participantRepository.saveAll(participants);
+    public void createList(List<Participant> participants) throws IOException {
+        List<Participant> participantsList = participantRepository.saveAll(participants);
+        for (Participant participant : participantsList) {
+            if (participant.getPhoneNumber() != null) {
+                TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
+                        .number(List.of(participant.getPhoneNumber()))
+                        .build();
+                restTemplateService.sendMessageRegisterWhatsapp(buildTargetNumber);
+            }
+        }
     }
 
     @Override
@@ -165,5 +176,12 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Override
     public Participant getByUserCredential(UserCredential userCredential) {
         return participantRepository.findByUserCredential(userCredential).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"participant not found"));
+    }
+
+    @Override
+    public String getClasses(Participant participant) {
+        DetailClassParticipant classesName = classDetailService.getByParticipantId(participant);
+        if (classesName == null) return "no class";
+        return classesName.getClasses().getName();
     }
 }

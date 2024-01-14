@@ -106,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public RegisterResponse registerTrainer(RegisterRequest request) {
+    public RegisterResponse registerTrainer(RegisterRequest request) throws IOException {
         Optional<UserCredential> optionalUserCredential = userCredentialRepository.findByEmail(request.getEmail());
         if (optionalUserCredential.isPresent())throw new ResponseStatusException(HttpStatus.CONFLICT,"email existed");
         Role roleTrainer = roleService.getOrSave(ERole.ROLE_TRAINER);
@@ -180,21 +180,23 @@ public class AuthServiceImpl implements AuthService {
         List<Participant> particpantList = new ArrayList<>();
 
         for (UploadRequest request : uploadRequests) {
-            UserCredential builUserCredential = UserCredential.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getEmail()))
-                    .roles(List.of(roleService.getOrSave(ERole.ROLE_PARTICIPANT)))
-                    .build();
-            Participant buildParticipant = Participant.builder()
-                    .name(request.getName())
-                    .gender(request.getGender())
-                    .address(request.getAddress())
-                    .phoneNumber(request.getPhoneNumber())
-                    .userCredential(builUserCredential)
-                    .build();
-            particpantList.add(buildParticipant);
-            userCredentialList.add(builUserCredential);
-
+            UserCredential optional = userCredentialRepository.findByEmail(request.getEmail()).orElse(null);
+            if (optional == null) {
+                UserCredential builUserCredential = UserCredential.builder()
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode("password"))
+                        .roles(List.of(roleService.getOrSave(ERole.ROLE_PARTICIPANT)))
+                        .build();
+                Participant buildParticipant = Participant.builder()
+                        .name(request.getName())
+                        .gender(request.getGender())
+                        .address(request.getAddress())
+                        .phoneNumber(request.getPhoneNumber())
+                        .userCredential(builUserCredential)
+                        .build();
+                particpantList.add(buildParticipant);
+                userCredentialList.add(builUserCredential);
+            }
         }
         userCredentialRepository.saveAll(userCredentialList);
         participantService.createList(particpantList);

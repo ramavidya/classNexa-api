@@ -121,15 +121,17 @@ public class DocumetationServiceImpl implements DocumetationService {
         String projectname = "ClassNexa";
         Path projectDirectory = Paths.get(System.getProperty("user.dir"), projectname);
 
-        String filePathString = projectDirectory.toAbsolutePath()+FILE_PATH2+multipartFile.getOriginalFilename();
+        UUID uuid = UUID.nameUUIDFromBytes(multipartFile.getOriginalFilename().getBytes());
 
         Documentation documentation1 = Documentation.builder()
                 .id(documentation.getId())
-                .fileName(multipartFile.getOriginalFilename())
+                .fileName(String.valueOf(uuid)+".png")
                 .trainer(byId)
                 .schedule(byIdSchedule)
                 .build();
         Documentation save = documetationRepository.save(documentation1);
+
+        String filePathString = projectDirectory.toAbsolutePath()+FILE_PATH2+save.getFileName();
         multipartFile.transferTo(new File(filePathString));
         return toDocumentationResponse(save);
     }

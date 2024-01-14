@@ -5,6 +5,7 @@ import com.enigma.ClassNexa.entity.UserCredential;
 import com.enigma.ClassNexa.model.request.*;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.repository.TrainerRepository;
+import com.enigma.ClassNexa.service.RestTemplateService;
 import com.enigma.ClassNexa.service.TrainerService;
 import com.enigma.ClassNexa.service.UserService;
 import jakarta.persistence.criteria.Predicate;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +28,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
+    private final RestTemplateService restTemplateService;
     private final UserService userService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String create(UserCreateRequest request) {
+    public String create(UserCreateRequest request) throws IOException {
         Trainer buildTrainer = Trainer.builder()
                 .name(request.getName())
                 .gender(request.getGender())
@@ -39,6 +42,13 @@ public class TrainerServiceImpl implements TrainerService {
                 .userCredential(request.getUserCredential())
                 .build();
         Trainer trainer = trainerRepository.saveAndFlush(buildTrainer);
+
+        if (request.getPhoneNumber() != null) {
+            TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
+                    .number(List.of(trainer.getPhoneNumber()))
+                    .build();
+            restTemplateService.sendMessageRegisterWhatsapp(buildTargetNumber);
+        }
         return trainer.getName();
     }
     @Override

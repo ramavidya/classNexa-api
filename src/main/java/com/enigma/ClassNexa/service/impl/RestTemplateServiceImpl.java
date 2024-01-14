@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class RestTemplateServiceImpl implements RestTemplateService {
+    @Value("${app.class-nexa.token-wa}")
+    private String tokenWa;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String sendMessageRegisterParticipant(TargetNumberRequest request) throws IOException {
+    public String sendMessageRegisterWhatsapp(TargetNumberRequest request) throws IOException {
         // Form data key-value pair
         String keyTarget = "target";
         String keyMessage = "message";
-        String valueMessage = "Hello Trainee Enigma Camp 2.0 \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n*#Kelompok_2_ngebul*";
+        String valueMessage = "Hello Enigmanians \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n";
 
         for (String targetNumber : request.getNumber()) {
             // URL endpoint
@@ -47,7 +51,7 @@ public class RestTemplateServiceImpl implements RestTemplateService {
             httpPost.setEntity(new UrlEncodedFormEntity(formData));
 
             // Add Authorization header
-            Header authorizationHeader = new BasicHeader("Authorization", "XXtVxw50c-1b7ki_@iVz");
+            Header authorizationHeader = new BasicHeader("Authorization", tokenWa);
             httpPost.addHeader(authorizationHeader);
 
             // Execute the request
