@@ -5,5 +5,5 @@ import com.enigma.ClassNexa.model.request.TargetNumberRequest;
 import java.io.IOException;
 
 public interface RestTemplateService {
-   String sendMessageRegisterParticipant(TargetNumberRequest request) throws IOException;
+   String sendMessageRegisterWhatsapp(TargetNumberRequest request) throws IOException;
 }

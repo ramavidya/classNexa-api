@@ -9,10 +9,11 @@ import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TrainerService {
-    String create(UserCreateRequest request);
+    String create(UserCreateRequest request) throws IOException;
     Page<Trainer> getAll(SearchUserRequest request);
     UserResponse getById(String request);
     UserResponse update(ProfileUpdateRequest request);

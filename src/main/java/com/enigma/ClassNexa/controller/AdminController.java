@@ -5,6 +5,7 @@ import com.enigma.ClassNexa.entity.Admin;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
+import com.enigma.ClassNexa.model.response.CommonResponse;
 import com.enigma.ClassNexa.model.response.PagingResponse;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
@@ -59,7 +60,7 @@ public class AdminController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
         UserResponse getByIdResponse = adminService.getById(id);
-        WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get admin")
                 .data(getByIdResponse)
@@ -71,7 +72,7 @@ public class AdminController {
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = adminService.update(request);
-        WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly update admin")
                 .data(updateResponse)
@@ -82,7 +83,7 @@ public class AdminController {
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
         String updateResponse = adminService.updatePassword(request);
-        WebResponse<String> response = WebResponse.<String>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly update password")
                 .data(updateResponse)
@@ -94,7 +95,7 @@ public class AdminController {
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = adminService.delete(id);
-        WebResponse<String> response = WebResponse.<String>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly delete admin")
                 .data(delete)

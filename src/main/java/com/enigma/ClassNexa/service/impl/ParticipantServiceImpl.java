@@ -49,15 +49,23 @@ public class ParticipantServiceImpl implements ParticipantService {
             TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
                     .number(List.of(participant.getPhoneNumber()))
                     .build();
-            restTemplateService.sendMessageRegisterParticipant(buildTargetNumber);
+            restTemplateService.sendMessageRegisterWhatsapp(buildTargetNumber);
         }
         return participant.getName();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createList(List<Participant> participants) {
-        participantRepository.saveAll(participants);
+    public void createList(List<Participant> participants) throws IOException {
+        List<Participant> participantsList = participantRepository.saveAll(participants);
+        for (Participant participant : participantsList) {
+            if (participant.getPhoneNumber() != null) {
+                TargetNumberRequest buildTargetNumber = TargetNumberRequest.builder()
+                        .number(List.of(participant.getPhoneNumber()))
+                        .build();
+                restTemplateService.sendMessageRegisterWhatsapp(buildTargetNumber);
+            }
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.enigma.ClassNexa.entity.Trainer;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
+import com.enigma.ClassNexa.model.response.CommonResponse;
 import com.enigma.ClassNexa.model.response.PagingResponse;
 import com.enigma.ClassNexa.model.response.UserResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
@@ -57,13 +58,11 @@ public class TrainerController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
         UserResponse getById = trainerService.getById(id);
-
-        WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get trainer")
                 .data(getById)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 
@@ -71,13 +70,11 @@ public class TrainerController {
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ProfileUpdateRequest request){
         UserResponse updateResponse = trainerService.update(request);
-
-        WebResponse<UserResponse> response = WebResponse.<UserResponse>builder()
+        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly update trainer")
                 .data(updateResponse)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 
@@ -85,13 +82,11 @@ public class TrainerController {
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest request){
         String updateResponse = trainerService.updatePassword(request);
-
-        WebResponse<String> response = WebResponse.<String>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly update password")
                 .data(updateResponse)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 
@@ -99,13 +94,11 @@ public class TrainerController {
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable String id){
         String delete = trainerService.delete(id);
-
-        WebResponse<String> response = WebResponse.<String>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly delete trainer")
                 .data(delete)
                 .build();
-
         return ResponseEntity.ok(response);
     }
 }

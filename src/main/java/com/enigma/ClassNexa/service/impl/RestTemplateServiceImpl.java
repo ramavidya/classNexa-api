@@ -28,11 +28,11 @@ import java.util.Map;
 public class RestTemplateServiceImpl implements RestTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String sendMessageRegisterParticipant(TargetNumberRequest request) throws IOException {
+    public String sendMessageRegisterWhatsapp(TargetNumberRequest request) throws IOException {
         // Form data key-value pair
         String keyTarget = "target";
         String keyMessage = "message";
-        String valueMessage = "Hello Trainee Enigma Camp 2.0 \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n*#Kelompok_2_ngebul*";
+        String valueMessage = "Hello Enigmanians \n \nYou have been successfully added to the Instructor LED App (*ClassNexa*). Stay tuned for schedule updates and activities from Instructor-LED sessions.\n \n";
 
         for (String targetNumber : request.getNumber()) {
             // URL endpoint

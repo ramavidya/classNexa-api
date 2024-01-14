@@ -2,6 +2,7 @@ package com.enigma.ClassNexa.controller;
 
 import com.enigma.ClassNexa.model.request.LoginRequest;
 import com.enigma.ClassNexa.model.request.RegisterRequest;
+import com.enigma.ClassNexa.model.response.CommonResponse;
 import com.enigma.ClassNexa.model.response.RegisterResponse;
 import com.enigma.ClassNexa.model.response.WebResponse;
 import com.enigma.ClassNexa.service.AuthService;
@@ -26,7 +27,7 @@ public class AuthController {
     @PostMapping(path = "/register/admin")
     public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest request){
         RegisterResponse registerResponse = authService.registerAdmin(request);
-        WebResponse<RegisterResponse> response = WebResponse.<RegisterResponse>builder()
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfuly create new admin")
                 .data(registerResponse)
@@ -36,9 +37,9 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(path = "/register/trainer")
-    public ResponseEntity<?> registerTrainer(@RequestBody RegisterRequest request){
+    public ResponseEntity<?> registerTrainer(@RequestBody RegisterRequest request) throws IOException {
         RegisterResponse registerResponse = authService.registerTrainer(request);
-        WebResponse<RegisterResponse> response = WebResponse.<RegisterResponse>builder()
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfuly create new trainer")
                 .data(registerResponse)
@@ -51,12 +52,11 @@ public class AuthController {
     @PostMapping(path = "/register/participant")
     public ResponseEntity<?> registerParticipan(@RequestBody RegisterRequest request) throws IOException {
         RegisterResponse registerResponse = authService.registerParticipant(request);
-        WebResponse<RegisterResponse> response = WebResponse.<RegisterResponse>builder()
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfuly create new participant")
                 .data(registerResponse)
                 .build();
-
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -64,7 +64,7 @@ public class AuthController {
     @PostMapping(path = "/register/participant/upload",consumes = {"multipart/form-data"})
     public ResponseEntity<?> registerUploadCsVParticipan(@RequestPart("file") MultipartFile file) throws IOException {
         Integer registerResponse = authService.uploadParticipant(file);
-        WebResponse<Integer> response = WebResponse.<Integer>builder()
+        CommonResponse<Integer> response = CommonResponse.<Integer>builder()
                 .status(HttpStatus.CREATED.getReasonPhrase())
                 .message("successfuly upload participant account")
                 .data(registerResponse)
@@ -76,7 +76,7 @@ public class AuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
         String login = authService.login(request);
-        WebResponse<String> response = WebResponse.<String>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly login")
                 .data(login)
