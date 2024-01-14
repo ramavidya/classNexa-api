@@ -26,4 +26,5 @@ public interface ParticipantService {
     Participant getByParticipantId(String id);
     List<Participant> getAllParticipant();
     Participant getByUserCredential(UserCredential userCredential);
+    String getClasses(Participant participant);
 }

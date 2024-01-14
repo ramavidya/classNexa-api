@@ -1,13 +1,12 @@
 package com.enigma.ClassNexa.controller;
 
+import com.enigma.ClassNexa.entity.DetailClassParticipant;
 import com.enigma.ClassNexa.entity.Participant;
 import com.enigma.ClassNexa.model.request.ProfileUpdateRequest;
 import com.enigma.ClassNexa.model.request.SearchUserRequest;
 import com.enigma.ClassNexa.model.request.UpdatePasswordRequest;
-import com.enigma.ClassNexa.model.response.CommonResponse;
-import com.enigma.ClassNexa.model.response.PagingResponse;
-import com.enigma.ClassNexa.model.response.UserResponse;
-import com.enigma.ClassNexa.model.response.WebResponse;
+import com.enigma.ClassNexa.model.response.*;
+import com.enigma.ClassNexa.service.ClassDetailService;
 import com.enigma.ClassNexa.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ import java.util.List;
 public class ParticipanController {
 
     private final ParticipantService participantService;
+
     @PreAuthorize("hasRole('PARTICIPANT')")
     @GetMapping
     public ResponseEntity<?> getAll(@RequestParam(required = false) String name,
@@ -32,18 +32,22 @@ public class ParticipanController {
                                     @RequestParam(required = false, defaultValue = "10") Integer size){
         SearchUserRequest buildSearch = SearchUserRequest.builder().name(name).page(page).size(size).build();
         Page<Participant> pageParticipant = participantService.getAll(buildSearch);
-        List<UserResponse> userGetResponses = new ArrayList<>();
+
+        List<ParticipantGetResponse> userGetResponses = new ArrayList<>();
         for (Participant participant : pageParticipant.getContent()) {
-            UserResponse buildResponse = UserResponse.builder()
+            String classes = participantService.getClasses(participant);
+            ParticipantGetResponse buildResponse = ParticipantGetResponse.builder()
                     .id(participant.getId())
                     .name(participant.getName())
                     .gender(participant.getGender())
                     .address(participant.getAddress())
                     .email(participant.getUserCredential().getEmail())
-                    .phoneNumber(participant.getPhoneNumber()).build();
+                    .phoneNumber(participant.getPhoneNumber())
+                    .classes(classes)
+                    .build();
             userGetResponses.add(buildResponse);
         }
-        WebResponse<List<UserResponse>> response = WebResponse.<List<UserResponse>>builder()
+        WebResponse<List<ParticipantGetResponse>> response = WebResponse.<List<ParticipantGetResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get participant")
                 .pagingResponse(new PagingResponse(pageParticipant.getTotalElements(),
@@ -58,12 +62,22 @@ public class ParticipanController {
     @PreAuthorize("hasRole('PARTICIPANT')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getById(@PathVariable String id){
-        UserResponse getById = participantService.getById(id);
+        Participant participant = participantService.getByParticipantId(id);
+        String classes = participantService.getClasses(participant);
+        ParticipantGetResponse buildResponse = ParticipantGetResponse.builder()
+                .id(participant.getId())
+                .name(participant.getName())
+                .gender(participant.getGender())
+                .address(participant.getAddress())
+                .email(participant.getUserCredential().getEmail())
+                .phoneNumber(participant.getPhoneNumber())
+                .classes(classes)
+                .build();
 
-        CommonResponse<UserResponse> response = CommonResponse.<UserResponse>builder()
+        CommonResponse<ParticipantGetResponse> response = CommonResponse.<ParticipantGetResponse>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get participant")
-                .data(getById)
+                .data(buildResponse)
                 .build();
 
         return ResponseEntity.ok(response);

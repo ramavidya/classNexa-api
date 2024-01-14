@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
             if (optional == null) {
                 UserCredential builUserCredential = UserCredential.builder()
                         .email(request.getEmail())
-                        .password(passwordEncoder.encode(request.getEmail()))
+                        .password(passwordEncoder.encode("password"))
                         .roles(List.of(roleService.getOrSave(ERole.ROLE_PARTICIPANT)))
                         .build();
                 Participant buildParticipant = Participant.builder()
