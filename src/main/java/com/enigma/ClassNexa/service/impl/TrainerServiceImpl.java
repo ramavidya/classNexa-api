@@ -75,16 +75,6 @@ public class TrainerServiceImpl implements TrainerService {
                 .phoneNumber(optionalTrainer.get().getPhoneNumber())
                 .build();
     }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Trainer getByTrainerId(String id) {
-        Optional<Trainer> optionalParticipant = trainerRepository.findById(id);
-        if (optionalParticipant.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer Not Found");
-        Trainer Trainer = optionalParticipant.get();
-        return Trainer;
-    }
-
     @Override
     public Trainer getByUserCredential(UserCredential userCredential) {
         return trainerRepository.findByUserCredential(userCredential).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "trainer not found"));
@@ -113,7 +103,6 @@ public class TrainerServiceImpl implements TrainerService {
                 .phoneNumber(trainer.getPhoneNumber())
                 .build();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String updatePassword(UpdatePasswordRequest request) {
@@ -127,7 +116,6 @@ public class TrainerServiceImpl implements TrainerService {
         );
         return updateUsercredential;
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String delete(String id) {
@@ -136,6 +124,13 @@ public class TrainerServiceImpl implements TrainerService {
         trainerRepository.deleteById(trainer.getId());
         String delete = userService.delete(userCredential);
         return delete;
+    }
+    @Override
+    public Trainer getByTrainerId(String id) {
+        Optional<Trainer> optionalParticipant = trainerRepository.findById(id);
+        if (optionalParticipant.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer Not Found");
+        Trainer Trainer = optionalParticipant.get();
+        return Trainer;
     }
     private static Specification<Trainer> getTrainerSpecification(SearchUserRequest request) {
         Specification<Trainer> specification = (root, query, criteriaBuilder) -> {

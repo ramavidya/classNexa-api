@@ -12,3 +12,4 @@ import java.util.Optional;
 public interface ParticipantRepository extends JpaRepository<Participant, String>, JpaSpecificationExecutor<Participant> {
     Optional<Participant> findByUserCredential(UserCredential userCredential);
 }
+

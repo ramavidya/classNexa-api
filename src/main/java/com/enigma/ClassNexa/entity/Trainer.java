@@ -29,4 +29,5 @@ public class Trainer {
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id")
     private UserCredential userCredential;
 
+
 }

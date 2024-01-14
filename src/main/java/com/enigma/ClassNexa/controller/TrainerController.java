@@ -46,10 +46,10 @@ public class TrainerController {
         WebResponse<List<UserResponse>> response = WebResponse.<List<UserResponse>>builder()
                 .status(HttpStatus.OK.getReasonPhrase())
                 .message("successfuly get trainer")
-                .paging(new PagingResponse(pageTrainer.getNumber()+1,
-                        pageTrainer.getSize(),
+                .pagingResponse(new PagingResponse(pageTrainer.getTotalElements(),
                         pageTrainer.getTotalPages(),
-                        pageTrainer.getTotalElements()))
+                        pageTrainer.getNumber()+1,
+                        pageTrainer.getSize()))
                 .data(userGetResponses).build();
         return ResponseEntity.ok(response);
     }
